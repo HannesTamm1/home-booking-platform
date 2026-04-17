@@ -19,6 +19,12 @@ export type ListingsResponse = {
     totalListings: number;
     averagePricePerNight: number;
     generatedAt: string;
+    pagination: {
+      currentPage: number;
+      perPage: number;
+      lastPage: number;
+      hasMorePages: boolean;
+    };
   };
 };
 

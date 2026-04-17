@@ -12,54 +12,128 @@ class ListingApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_returns_listings_with_host_and_booking_metrics(): void
+    public function test_it_returns_paginated_listings_with_host_and_booking_metrics(): void
     {
-        $host = User::query()->create([
-            'email' => 'host@example.com',
-            'role' => 'host',
-        ]);
+        $host = $this->createUser('host@example.com', 'host');
+        $guest = $this->createUser('guest@example.com', 'guest');
+        $listing = $this->createListing($host, 'Seaside Loft', 225, 4);
 
-        $guest = User::query()->create([
-            'email' => 'guest@example.com',
-            'role' => 'guest',
-        ]);
-
-        $listing = Listing::query()->create([
-            'host_id' => $host->id,
-            'title' => 'Seaside Loft',
-            'price_per_night' => 225,
-            'max_guests' => 4,
-        ]);
-
-        Booking::query()->create([
-            'listing_id' => $listing->id,
-            'user_id' => $guest->id,
+        $this->createBooking($listing, $guest, [
             'start_date' => '2026-05-01',
             'end_date' => '2026-05-03',
             'total_price' => 450,
             'status' => 'confirmed',
         ]);
 
-        Booking::query()->create([
-            'listing_id' => $listing->id,
-            'user_id' => $guest->id,
+        $this->createBooking($listing, $guest, [
             'start_date' => '2026-06-10',
             'end_date' => '2026-06-11',
             'total_price' => 225,
             'status' => 'pending',
         ]);
 
-        $response = $this->getJson('/api/listings');
+        $response = $this->getJson('/api/listings?per_page=10');
 
         $response
             ->assertOk()
             ->assertJsonPath('meta.totalListings', 1)
             ->assertJsonPath('meta.averagePricePerNight', 225)
+            ->assertJsonPath('meta.pagination.currentPage', 1)
+            ->assertJsonPath('meta.pagination.perPage', 10)
+            ->assertJsonPath('meta.pagination.lastPage', 1)
+            ->assertJsonPath('meta.pagination.hasMorePages', false)
             ->assertJsonPath('data.0.title', 'Seaside Loft')
             ->assertJsonPath('data.0.pricePerNight', 225)
             ->assertJsonPath('data.0.maxGuests', 4)
             ->assertJsonPath('data.0.host.publicLabel', 'Managed by host')
             ->assertJsonPath('data.0.metrics.confirmedBookings', 1)
             ->assertJsonPath('data.0.metrics.confirmedRevenue', 450);
+    }
+
+    public function test_it_validates_pagination_query_parameters(): void
+    {
+        $response = $this->getJson('/api/listings?page=0&per_page=999');
+
+        $response
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['page', 'per_page']);
+    }
+
+    public function test_it_paginates_listing_results(): void
+    {
+        $host = $this->createUser('host@example.com', 'host');
+
+        $this->createListing($host, 'Seaside Loft', 225, 4);
+        $this->createListing($host, 'Forest Cabin', 180, 3);
+        $this->createListing($host, 'City Studio', 120, 2);
+
+        $response = $this->getJson('/api/listings?per_page=2');
+
+        $response
+            ->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('meta.totalListings', 3)
+            ->assertJsonPath('meta.averagePricePerNight', 175)
+            ->assertJsonPath('meta.pagination.currentPage', 1)
+            ->assertJsonPath('meta.pagination.perPage', 2)
+            ->assertJsonPath('meta.pagination.lastPage', 2)
+            ->assertJsonPath('meta.pagination.hasMorePages', true);
+    }
+
+    public function test_it_applies_security_headers_to_api_responses(): void
+    {
+        $response = $this->getJson('/api/listings');
+
+        $response
+            ->assertOk()
+            ->assertHeader('Cache-Control', 'no-store, private')
+            ->assertHeader('Content-Security-Policy', "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+            ->assertHeader('Referrer-Policy', 'no-referrer')
+            ->assertHeader('X-Content-Type-Options', 'nosniff')
+            ->assertHeader('X-Frame-Options', 'DENY')
+            ->assertHeader('X-Permitted-Cross-Domain-Policies', 'none');
+    }
+
+    public function test_it_rate_limits_the_api(): void
+    {
+        config(['api.rate_limit_per_minute' => 2]);
+
+        $client = $this->withServerVariables([
+            'REMOTE_ADDR' => '203.0.113.10',
+        ]);
+
+        $client->getJson('/api/listings')->assertOk();
+        $client->getJson('/api/listings')->assertOk();
+        $client->getJson('/api/listings')->assertTooManyRequests();
+    }
+
+    private function createUser(string $email, string $role): User
+    {
+        return User::query()->create([
+            'email' => $email,
+            'role' => $role,
+        ]);
+    }
+
+    private function createListing(User $host, string $title, float $pricePerNight, int $maxGuests): Listing
+    {
+        return Listing::query()->create([
+            'host_id' => $host->id,
+            'title' => $title,
+            'price_per_night' => $pricePerNight,
+            'max_guests' => $maxGuests,
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    private function createBooking(Listing $listing, User $guest, array $attributes): Booking
+    {
+        return Booking::query()->create([
+            'listing_id' => $listing->id,
+            'user_id' => $guest->id,
+            ...$attributes,
+        ]);
     }
 }
