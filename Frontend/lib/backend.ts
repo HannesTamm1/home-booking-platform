@@ -1,33 +1,3 @@
-export type Listing = {
-  id: number;
-  title: string;
-  pricePerNight: number;
-  maxGuests: number;
-  createdAt: string | null;
-  host: {
-    publicLabel: string;
-  };
-  metrics: {
-    confirmedBookings: number;
-    confirmedRevenue: number;
-  };
-};
-
-export type ListingsResponse = {
-  data: Listing[];
-  meta: {
-    totalListings: number;
-    averagePricePerNight: number;
-    generatedAt: string;
-    pagination: {
-      currentPage: number;
-      perPage: number;
-      lastPage: number;
-      hasMorePages: boolean;
-    };
-  };
-};
-
 const DEFAULT_BACKEND_URL = "http://127.0.0.1:8000";
 
 function getBackendBaseUrl() {
@@ -53,9 +23,12 @@ function getBackendBaseUrl() {
   return backendUrl;
 }
 
-export async function fetchListings() {
-  let backendUrl = process.env.BACKEND_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? DEFAULT_BACKEND_URL;
-  let endpoint = "";
+export async function fetchLaravelStatus() {
+  let backendUrl =
+    process.env.BACKEND_URL ??
+    process.env.NEXT_PUBLIC_BACKEND_URL ??
+    DEFAULT_BACKEND_URL;
+  let endpoint = `${backendUrl.replace(/\/$/, "")}/api/listings`;
 
   try {
     backendUrl = getBackendBaseUrl();
@@ -72,13 +45,11 @@ export async function fetchListings() {
       throw new Error(`Backend returned ${response.status}`);
     }
 
-    const payload = (await response.json()) as ListingsResponse;
-
     return {
       backendUrl,
       endpoint,
       error: null,
-      payload,
+      isConnected: true,
     };
   } catch (error) {
     return {
@@ -86,7 +57,7 @@ export async function fetchListings() {
       endpoint,
       error:
         error instanceof Error ? error.message : "Unknown backend connection error",
-      payload: null,
+      isConnected: false,
     };
   }
 }
