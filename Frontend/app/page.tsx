@@ -1,56 +1,54 @@
-import { fetchLaravelStatus } from "@/lib/backend";
+import Link from "next/link";
+import { cookies } from "next/headers";
+
+import { AUTH_COOKIE_NAME, decodeAuthSession } from "@/lib/auth-session";
 
 export default async function Home() {
-  const { backendUrl, endpoint, error, isConnected } = await fetchLaravelStatus();
+  const session = decodeAuthSession((await cookies()).get(AUTH_COOKIE_NAME)?.value);
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-6 py-16">
-      <section
-        className="w-full max-w-xl rounded-3xl border p-8 shadow-[var(--shadow)] md:p-10"
-        style={{
-          background: isConnected ? "var(--success-surface)" : "var(--danger-surface)",
-        }}
-      >
-        <div className="space-y-6">
-          <div
-            className="inline-flex rounded-full px-3 py-1 text-sm font-medium"
-            style={{
-              color: isConnected ? "var(--success)" : "var(--danger)",
-              background: "var(--surface)",
-            }}
-          >
-            {isConnected ? "Laravel connected" : "Laravel not connected"}
-          </div>
+    <main className="min-h-screen bg-stone-50 text-neutral-900">
+      <div className="mx-auto flex w-full max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8">
+        <header className="flex items-center justify-between border-b border-neutral-200 pb-6">
+          <Link href="/" className="text-2xl font-semibold tracking-tight text-rose-500">
+            airbnb
+          </Link>
 
-          <div className="space-y-3">
-            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-              {isConnected
-                ? "Frontend is connected to Laravel."
-                : "Frontend cannot reach Laravel."}
-            </h1>
-            <p className="text-base leading-7 text-[var(--muted)]">
-              {isConnected
-                ? "The Next.js app can reach the Laravel API."
-                : "Start the Laravel server or check the backend URL in the frontend environment."}
-            </p>
-          </div>
-
-          <div
-            className="rounded-2xl border p-4"
-            style={{ background: "var(--surface)" }}
-          >
-            <p className="text-sm font-medium text-[var(--muted)]">Backend URL</p>
-            <p className="mt-1 break-all text-sm">{backendUrl}</p>
-            <p className="mt-4 text-sm font-medium text-[var(--muted)]">Endpoint</p>
-            <p className="mt-1 break-all text-sm">{endpoint}</p>
-            {error ? (
-              <p className="mt-4 text-sm" style={{ color: "var(--danger)" }}>
-                {error}
-              </p>
-            ) : null}
-          </div>
-        </div>
-      </section>
+          {session ? (
+            <div className="flex items-center gap-3">
+              <div className="hidden text-right sm:block">
+                <p className="text-sm font-medium text-neutral-900">
+                  {session.name ?? session.email}
+                </p>
+                <p className="text-xs text-neutral-500">{session.role}</p>
+              </div>
+              <form action="/api/auth/logout" method="post">
+                <button
+                  type="submit"
+                  className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+                >
+                  Log out
+                </button>
+              </form>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link
+                href="/login"
+                className="rounded-full px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 hover:text-neutral-900"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/register"
+                className="rounded-full border border-neutral-900 bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-800"
+              >
+                Register
+              </Link>
+            </div>
+          )}
+        </header>
+      </div>
     </main>
   );
 }
