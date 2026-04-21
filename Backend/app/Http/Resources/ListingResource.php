@@ -19,6 +19,7 @@ class ListingResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'destination' => $this->destination,
             'pricePerNight' => (float) $this->price_per_night,
             'maxGuests' => $this->max_guests,
             'host' => [

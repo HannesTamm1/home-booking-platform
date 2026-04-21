@@ -13,6 +13,7 @@ export type AuthResponse = {
 export type Listing = {
   id: number;
   title: string;
+  destination: string | null;
   pricePerNight: number;
   maxGuests: number;
   host: {
@@ -31,6 +32,13 @@ export type ListingsResponse = {
     totalListings: number;
     averagePricePerNight: number;
     generatedAt: string;
+    filters: {
+      destination: string | null;
+      guests: number | null;
+      checkIn: string | null;
+      checkOut: string | null;
+      availableDestinations: string[];
+    };
     pagination: {
       currentPage: number;
       perPage: number;
@@ -121,12 +129,62 @@ export async function fetchListings(perPage = 6): Promise<
       listings: null;
     }
 > {
+  return fetchListingsWithFilters({ perPage });
+}
+
+export async function fetchListingsWithFilters({
+  perPage = 6,
+  destination,
+  guests,
+  checkIn,
+  checkOut,
+}: {
+  perPage?: number;
+  destination?: string;
+  guests?: number;
+  checkIn?: string;
+  checkOut?: string;
+}): Promise<
+  | {
+      backendUrl: string;
+      endpoint: string;
+      error: null;
+      isConnected: true;
+      listings: ListingsResponse;
+    }
+  | {
+      backendUrl: string;
+      endpoint: string;
+      error: string;
+      isConnected: false;
+      listings: null;
+    }
+> {
   let backendUrl = process.env.BACKEND_URL ?? "";
-  let endpoint = backendUrl ? `${backendUrl.replace(/\/$/, "")}/api/listings?per_page=${perPage}` : "";
+  const searchParams = new URLSearchParams({
+    per_page: String(perPage),
+  });
+
+  if (destination) {
+    searchParams.set("destination", destination);
+  }
+
+  if (guests) {
+    searchParams.set("guests", String(guests));
+  }
+
+  if (checkIn && checkOut) {
+    searchParams.set("check_in", checkIn);
+    searchParams.set("check_out", checkOut);
+  }
+
+  let endpoint = backendUrl
+    ? `${backendUrl.replace(/\/$/, "")}/api/listings?${searchParams.toString()}`
+    : "";
 
   try {
     backendUrl = getBackendBaseUrl();
-    endpoint = new URL(`/api/listings?per_page=${perPage}`, `${backendUrl}/`).toString();
+    endpoint = new URL(`/api/listings?${searchParams.toString()}`, `${backendUrl}/`).toString();
 
     const response = await fetch(endpoint, {
       cache: "no-store",

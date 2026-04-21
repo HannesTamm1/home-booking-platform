@@ -16,7 +16,7 @@ class ListingApiTest extends TestCase
     {
         $host = $this->createUser('host@example.com', 'host');
         $guest = $this->createUser('guest@example.com', 'guest');
-        $listing = $this->createListing($host, 'Seaside Loft', 225, 4);
+        $listing = $this->createListing($host, 'Seaside Loft', 'Tallinn', 225, 4);
 
         $this->createBooking($listing, $guest, [
             'start_date' => '2026-05-01',
@@ -42,7 +42,9 @@ class ListingApiTest extends TestCase
             ->assertJsonPath('meta.pagination.perPage', 10)
             ->assertJsonPath('meta.pagination.lastPage', 1)
             ->assertJsonPath('meta.pagination.hasMorePages', false)
+            ->assertJsonPath('meta.filters.availableDestinations.0', 'Tallinn')
             ->assertJsonPath('data.0.title', 'Seaside Loft')
+            ->assertJsonPath('data.0.destination', 'Tallinn')
             ->assertJsonPath('data.0.pricePerNight', 225)
             ->assertJsonPath('data.0.maxGuests', 4)
             ->assertJsonPath('data.0.host.publicLabel', 'Managed by host')
@@ -63,9 +65,9 @@ class ListingApiTest extends TestCase
     {
         $host = $this->createUser('host@example.com', 'host');
 
-        $this->createListing($host, 'Seaside Loft', 225, 4);
-        $this->createListing($host, 'Forest Cabin', 180, 3);
-        $this->createListing($host, 'City Studio', 120, 2);
+        $this->createListing($host, 'Seaside Loft', 'Tallinn', 225, 4);
+        $this->createListing($host, 'Forest Cabin', 'Riga', 180, 3);
+        $this->createListing($host, 'City Studio', 'Vilnius', 120, 2);
 
         $response = $this->getJson('/api/listings?per_page=2');
 
@@ -78,6 +80,51 @@ class ListingApiTest extends TestCase
             ->assertJsonPath('meta.pagination.perPage', 2)
             ->assertJsonPath('meta.pagination.lastPage', 2)
             ->assertJsonPath('meta.pagination.hasMorePages', true);
+    }
+
+    public function test_it_filters_by_destination_guests_and_dates(): void
+    {
+        $host = $this->createUser('host@example.com', 'host');
+        $guest = $this->createUser('guest@example.com', 'guest');
+
+        $tallinnAvailable = $this->createListing($host, 'Tallinn Loft', 'Tallinn', 210, 4);
+        $tallinnBooked = $this->createListing($host, 'Tallinn Old Town Flat', 'Tallinn', 260, 2);
+        $this->createListing($host, 'Riga Riverside', 'Riga', 180, 5);
+
+        $this->createBooking($tallinnBooked, $guest, [
+            'start_date' => '2026-06-10',
+            'end_date' => '2026-06-15',
+            'total_price' => 1300,
+            'status' => 'confirmed',
+        ]);
+
+        $response = $this->getJson('/api/listings?destination=Tallinn&guests=3&check_in=2026-06-12&check_out=2026-06-14');
+
+        $response
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('meta.totalListings', 1)
+            ->assertJsonPath('meta.filters.destination', 'Tallinn')
+            ->assertJsonPath('meta.filters.guests', 3)
+            ->assertJsonPath('meta.filters.checkIn', '2026-06-12')
+            ->assertJsonPath('meta.filters.checkOut', '2026-06-14')
+            ->assertJsonPath('data.0.id', $tallinnAvailable->id)
+            ->assertJsonPath('data.0.destination', 'Tallinn');
+    }
+
+    public function test_it_ignores_unknown_destination_filters(): void
+    {
+        $host = $this->createUser('host@example.com', 'host');
+
+        $this->createListing($host, 'Tallinn Loft', 'Tallinn', 210, 4);
+        $this->createListing($host, 'Riga Riverside', 'Riga', 180, 5);
+
+        $response = $this->getJson('/api/listings?destination=Berlin');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('meta.totalListings', 2)
+            ->assertJsonCount(2, 'data');
     }
 
     public function test_it_applies_security_headers_to_api_responses(): void
@@ -110,16 +157,19 @@ class ListingApiTest extends TestCase
     private function createUser(string $email, string $role): User
     {
         return User::query()->create([
+            'name' => ucfirst($role).' Demo',
             'email' => $email,
+            'password' => 'password123',
             'role' => $role,
         ]);
     }
 
-    private function createListing(User $host, string $title, float $pricePerNight, int $maxGuests): Listing
+    private function createListing(User $host, string $title, string $destination, float $pricePerNight, int $maxGuests): Listing
     {
         return Listing::query()->create([
             'host_id' => $host->id,
             'title' => $title,
+            'destination' => $destination,
             'price_per_night' => $pricePerNight,
             'max_guests' => $maxGuests,
         ]);

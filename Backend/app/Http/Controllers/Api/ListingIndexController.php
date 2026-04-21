@@ -12,15 +12,23 @@ class ListingIndexController extends Controller
 {
     public function __invoke(ListListingsRequest $request, PaginateListings $paginateListings): JsonResponse
     {
-        $paginator = $paginateListings->execute($request->perPage());
+        $filters = $request->filters();
+        $paginator = $paginateListings->execute($request->perPage(), $filters);
         $listings = ListingResource::collection($paginator->getCollection())->resolve($request);
 
         return response()->json([
             'data' => $listings,
             'meta' => [
                 'totalListings' => $paginator->total(),
-                'averagePricePerNight' => $paginateListings->averagePricePerNight(),
+                'averagePricePerNight' => $paginateListings->averagePricePerNight($filters),
                 'generatedAt' => now()->toISOString(),
+                'filters' => [
+                    'destination' => $filters['destination'],
+                    'guests' => $filters['guests'],
+                    'checkIn' => $filters['check_in'],
+                    'checkOut' => $filters['check_out'],
+                    'availableDestinations' => $paginateListings->destinations(),
+                ],
                 'pagination' => [
                     'currentPage' => $paginator->currentPage(),
                     'perPage' => $paginator->perPage(),

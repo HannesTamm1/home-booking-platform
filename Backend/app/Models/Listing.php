@@ -11,6 +11,7 @@ class Listing extends Model
     protected $fillable = [
         'host_id',
         'title',
+        'destination',
         'price_per_night',
         'max_guests',
     ];
