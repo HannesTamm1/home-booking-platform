@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 
 import { AUTH_COOKIE_NAME, decodeAuthSession } from "@/lib/auth-session";
 import { fetchListingsWithFilters } from "@/lib/backend";
+import { SearchForm } from "@/components/search-form";
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -85,54 +86,13 @@ export default async function Home({ searchParams }: HomeProps) {
             )}
           </div>
 
-          <form action="/" method="get" className="mt-6 grid gap-3 lg:grid-cols-[1.2fr_1fr_1fr_0.8fr_auto]">
-            <select
-              name="destination"
-              defaultValue={selectedDestination}
-              className="h-12 rounded-full border border-neutral-300 bg-white px-4 text-sm text-neutral-900 outline-none transition focus:border-neutral-900"
-            >
-              <option value="">Anywhere</option>
-              {availableDestinations.map((destination) => (
-                <option key={destination} value={destination}>
-                  {destination}
-                </option>
-              ))}
-            </select>
-
-            <input
-              type="date"
-              name="check_in"
-              defaultValue={checkIn}
-              className="h-12 rounded-full border border-neutral-300 bg-white px-4 text-sm text-neutral-900 outline-none transition focus:border-neutral-900"
-            />
-
-            <input
-              type="date"
-              name="check_out"
-              defaultValue={checkOut}
-              className="h-12 rounded-full border border-neutral-300 bg-white px-4 text-sm text-neutral-900 outline-none transition focus:border-neutral-900"
-            />
-
-            <select
-              name="guests"
-              defaultValue={params.guests ?? ""}
-              className="h-12 rounded-full border border-neutral-300 bg-white px-4 text-sm text-neutral-900 outline-none transition focus:border-neutral-900"
-            >
-              <option value="">Any guests</option>
-              {Array.from({ length: 8 }, (_, index) => (
-                <option key={index + 1} value={index + 1}>
-                  {index + 1} guest{index === 0 ? "" : "s"}
-                </option>
-              ))}
-            </select>
-
-            <button
-              type="submit"
-              className="h-12 rounded-full bg-rose-500 px-6 text-sm font-semibold text-white transition hover:bg-rose-600"
-            >
-              Search
-            </button>
-          </form>
+          <SearchForm
+            availableDestinations={availableDestinations}
+            selectedDestination={selectedDestination}
+            defaultCheckIn={checkIn}
+            defaultCheckOut={checkOut}
+            defaultGuests={params.guests}
+          />
         </header>
 
         <section className="py-8">
