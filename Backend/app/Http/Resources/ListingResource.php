@@ -20,8 +20,12 @@ class ListingResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'destination' => $this->destination,
+            'description' => $this->description,
             'pricePerNight' => round($this->price_per_night_cents / 100, 2),
+            'currency' => $this->currency,
             'maxGuests' => $this->max_guests,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
             'host' => [
                 'publicLabel' => $this->host ? 'Managed by host' : 'Host unavailable',
             ],
@@ -30,6 +34,7 @@ class ListingResource extends JsonResource
                 'confirmedRevenue' => round(($this->confirmed_revenue ?? 0) / 100, 2),
             ],
             'createdAt' => $this->created_at?->toISOString(),
+            'updatedAt' => $this->updated_at?->toISOString(),
         ];
     }
 }
