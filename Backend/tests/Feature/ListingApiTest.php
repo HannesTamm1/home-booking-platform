@@ -170,7 +170,7 @@ class ListingApiTest extends TestCase
             'host_id' => $host->id,
             'title' => $title,
             'destination' => $destination,
-            'price_per_night' => $pricePerNight,
+            'price_per_night_cents' => (int) round($pricePerNight * 100),
             'max_guests' => $maxGuests,
         ]);
     }
@@ -180,6 +180,11 @@ class ListingApiTest extends TestCase
      */
     private function createBooking(Listing $listing, User $guest, array $attributes): Booking
     {
+        if (isset($attributes['total_price'])) {
+            $attributes['total_price_cents'] = (int) round($attributes['total_price'] * 100);
+            unset($attributes['total_price']);
+        }
+
         return Booking::query()->create([
             'listing_id' => $listing->id,
             'user_id' => $guest->id,

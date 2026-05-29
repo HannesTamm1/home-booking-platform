@@ -15,7 +15,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->date('start_date');
             $table->date('end_date');
-            $table->decimal('total_price', 10, 2);
+            $table->unsignedInteger('total_price_cents');
+            $table->char('currency', 3)->default('EUR');
             $table->string('status')->index();
             $table->timestamps();
 
@@ -23,7 +24,7 @@ return new class extends Migration
         });
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('ALTER TABLE bookings ADD CONSTRAINT bookings_total_price_check CHECK (total_price >= 0)');
+            DB::statement('ALTER TABLE bookings ADD CONSTRAINT bookings_total_price_check CHECK (total_price_cents >= 0)');
             DB::statement('ALTER TABLE bookings ADD CONSTRAINT bookings_date_range_check CHECK (end_date >= start_date)');
         }
     }

@@ -3,13 +3,13 @@
 namespace App\Actions\Listings;
 
 use App\Models\Listing;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PaginateListings
 {
     /**
-     * @param  array{destination: string|null, guests: int|null, check_in: string|null, check_out: string|null}  $filters
+     * @param  array{destination?: string|null, guests?: int|null, check_in?: string|null, check_out?: string|null}  $filters
      */
     public function execute(int $perPage, array $filters = []): LengthAwarePaginator
     {
@@ -19,11 +19,11 @@ class PaginateListings
     }
 
     /**
-     * @param  array{destination: string|null, guests: int|null, check_in: string|null, check_out: string|null}  $filters
+     * @param  array{destination?: string|null, guests?: int|null, check_in?: string|null, check_out?: string|null}  $filters
      */
     public function averagePricePerNight(array $filters = []): float
     {
-        return round((float) $this->filterQuery($filters)->avg('price_per_night'), 2);
+        return round((float) $this->filterQuery($filters)->avg('price_per_night_cents') / 100, 2);
     }
 
     /**
@@ -42,7 +42,7 @@ class PaginateListings
     }
 
     /**
-     * @param  array{destination: string|null, guests: int|null, check_in: string|null, check_out: string|null}  $filters
+     * @param  array{destination?: string|null, guests?: int|null, check_in?: string|null, check_out?: string|null}  $filters
      */
     private function baseQuery(array $filters = []): Builder
     {
@@ -53,12 +53,12 @@ class PaginateListings
             ])
             ->withSum([
                 'bookings as confirmed_revenue' => fn (Builder $query) => $query->where('status', 'confirmed'),
-            ], 'total_price')
+            ], 'total_price_cents')
             ->latest();
     }
 
     /**
-     * @param  array{destination: string|null, guests: int|null, check_in: string|null, check_out: string|null}  $filters
+     * @param  array{destination?: string|null, guests?: int|null, check_in?: string|null, check_out?: string|null}  $filters
      */
     private function filterQuery(array $filters = []): Builder
     {

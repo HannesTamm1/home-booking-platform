@@ -20,14 +20,14 @@ class ListingResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'destination' => $this->destination,
-            'pricePerNight' => (float) $this->price_per_night,
+            'pricePerNight' => round($this->price_per_night_cents / 100, 2),
             'maxGuests' => $this->max_guests,
             'host' => [
                 'publicLabel' => $this->host ? 'Managed by host' : 'Host unavailable',
             ],
             'metrics' => [
                 'confirmedBookings' => (int) ($this->confirmed_bookings_count ?? 0),
-                'confirmedRevenue' => (float) ($this->confirmed_revenue ?? 0),
+                'confirmedRevenue' => round(($this->confirmed_revenue ?? 0) / 100, 2),
             ],
             'createdAt' => $this->created_at?->toISOString(),
         ];

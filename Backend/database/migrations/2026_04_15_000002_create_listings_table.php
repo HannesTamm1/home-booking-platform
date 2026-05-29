@@ -13,13 +13,18 @@ return new class extends Migration
             $table->id();
             $table->foreignId('host_id')->constrained('users')->cascadeOnDelete();
             $table->string('title');
-            $table->decimal('price_per_night');
-            $table->unsignedInteger('max_guests');
+            $table->string('destination')->nullable()->index();
+            $table->text('description')->nullable();
+            $table->unsignedInteger('price_per_night_cents');
+            $table->char('currency', 3)->default('EUR');
+            $table->unsignedSmallInteger('max_guests');
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 11, 7)->nullable();
             $table->timestamps();
         });
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('ALTER TABLE listings ADD CONSTRAINT listings_price_per_night_check CHECK (price_per_night >= 0)');
+            DB::statement('ALTER TABLE listings ADD CONSTRAINT listings_price_check CHECK (price_per_night_cents >= 0)');
             DB::statement('ALTER TABLE listings ADD CONSTRAINT listings_max_guests_check CHECK (max_guests > 0)');
         }
     }
