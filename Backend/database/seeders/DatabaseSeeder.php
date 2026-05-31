@@ -12,6 +12,14 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Admin account
+        User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'password' => 'password123',
+            'role' => 'admin',
+        ]);
+
         // Known demo accounts for manual testing
         $host = User::factory()->host()->create([
             'name' => 'Demo Host',

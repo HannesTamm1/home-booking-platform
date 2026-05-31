@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     cookieStore.set({
       name: AUTH_COOKIE_NAME,
-      value: encodeAuthSession(authPayload.user),
+      value: encodeAuthSession({ ...authPayload.user, token: authPayload.token }),
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",

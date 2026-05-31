@@ -27,8 +27,12 @@ class LoginController extends Controller
             ]);
         }
 
+        $user->tokens()->where('name', 'api')->delete();
+        $token = $user->createToken('api')->plainTextToken;
+
         return response()->json([
             'message' => 'Logged in successfully.',
+            'token' => $token,
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,

@@ -3,11 +3,13 @@ export type AuthUser = {
   name: string | null;
   email: string;
   role: string;
+  token: string;
 };
 
 export type AuthResponse = {
   message: string;
-  user: AuthUser;
+  token: string;
+  user: Omit<AuthUser, "token">;
 };
 
 export type Listing = {
@@ -75,6 +77,25 @@ export function getBackendBaseUrl() {
   }
 
   return backendUrl;
+}
+
+export async function backendFetch(
+  path: string,
+  token: string,
+  options: RequestInit = {},
+): Promise<Response> {
+  const backendUrl = getBackendBaseUrl();
+  const url = new URL(path, `${backendUrl}/`).toString();
+
+  return fetch(url, {
+    ...options,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      ...(options.headers ?? {}),
+    },
+  });
 }
 
 export async function fetchLaravelStatus() {

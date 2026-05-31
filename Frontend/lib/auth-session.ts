@@ -18,7 +18,8 @@ export function decodeAuthSession(value?: string) {
       typeof parsed === "object" &&
       parsed !== null &&
       typeof parsed.email === "string" &&
-      typeof parsed.role === "string"
+      typeof parsed.role === "string" &&
+      typeof parsed.token === "string"
     ) {
       return parsed as AuthUser;
     }

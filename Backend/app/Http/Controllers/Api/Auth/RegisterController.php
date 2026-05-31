@@ -19,8 +19,11 @@ class RegisterController extends Controller
             'role' => 'guest',
         ]);
 
+        $token = $user->createToken('api')->plainTextToken;
+
         return response()->json([
             'message' => 'Account created successfully.',
+            'token' => $token,
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,

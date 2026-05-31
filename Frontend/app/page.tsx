@@ -57,8 +57,22 @@ export default async function Home({ searchParams }: HomeProps) {
                   <p className="text-sm font-medium text-neutral-900">
                     {session.name ?? session.email}
                   </p>
-                  <p className="text-xs text-neutral-500">{session.role}</p>
+                  <p className="text-xs text-neutral-500 capitalize">{session.role}</p>
                 </div>
+                {session.role === "admin" && (
+                  <Link
+                    href="/admin/host-applications"
+                    className="rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 transition hover:bg-amber-100"
+                  >
+                    Admin
+                  </Link>
+                )}
+                <Link
+                  href="/settings"
+                  className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+                >
+                  Settings
+                </Link>
                 <form action="/api/auth/logout" method="post">
                   <button
                     type="submit"
