@@ -8,11 +8,12 @@ type AuthMode = "login" | "register";
 
 type AuthFormProps = {
   mode: AuthMode;
+  redirectTo?: string;
 };
 
 type ErrorState = Record<string, string[]>;
 
-export function AuthForm({ mode }: AuthFormProps) {
+export function AuthForm({ mode, redirectTo }: AuthFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [errors, setErrors] = useState<ErrorState>({});
@@ -56,7 +57,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         return;
       }
 
-      router.push("/");
+      router.push(redirectTo ?? "/");
       router.refresh();
     });
   }
@@ -172,7 +173,11 @@ export function AuthForm({ mode }: AuthFormProps) {
       <p className="mt-6 text-center text-sm text-neutral-500">
         {isLogin ? "Need an account?" : "Already have an account?"}{" "}
         <Link
-          href={isLogin ? "/register" : "/login"}
+          href={
+            isLogin
+              ? redirectTo ? `/register?redirect=${encodeURIComponent(redirectTo)}` : "/register"
+              : redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"
+          }
           className="font-semibold text-neutral-900 underline underline-offset-4"
         >
           {isLogin ? "Register" : "Log in"}

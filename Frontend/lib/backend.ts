@@ -16,8 +16,13 @@ export type Listing = {
   id: number;
   title: string;
   destination: string | null;
+  description: string | null;
   pricePerNight: number;
+  currency: string;
   maxGuests: number;
+  latitude: number | null;
+  longitude: number | null;
+  photos?: Array<{ url: string; caption: string | null }>;
   host: {
     publicLabel: string;
   };
@@ -25,6 +30,31 @@ export type Listing = {
     confirmedBookings: number;
     confirmedRevenue: number;
   };
+  createdAt: string | null;
+  updatedAt: string | null;
+};
+
+export type AvailabilityPeriod = { startDate: string; endDate: string };
+
+export type BookingListing = {
+  id: number;
+  title: string;
+  destination: string | null;
+  pricePerNight: number;
+  currency: string;
+  maxGuests: number;
+};
+
+export type Booking = {
+  id: number;
+  listingId: number;
+  listing?: BookingListing;
+  startDate: string;
+  endDate: string;
+  nights: number | null;
+  totalPrice: number;
+  currency: string;
+  status: string;
   createdAt: string | null;
 };
 
@@ -159,12 +189,14 @@ export async function fetchListingsWithFilters({
   guests,
   checkIn,
   checkOut,
+  page,
 }: {
   perPage?: number;
   destination?: string;
   guests?: number;
   checkIn?: string;
   checkOut?: string;
+  page?: number;
 }): Promise<
   | {
       backendUrl: string;
@@ -185,6 +217,10 @@ export async function fetchListingsWithFilters({
   const searchParams = new URLSearchParams({
     per_page: String(perPage),
   });
+
+  if (page && page > 1) {
+    searchParams.set("page", String(page));
+  }
 
   if (destination) {
     searchParams.set("destination", destination);
@@ -235,6 +271,125 @@ export async function fetchListingsWithFilters({
         error instanceof Error ? error.message : "Unknown backend connection error",
       isConnected: false,
       listings: null,
+    };
+  }
+}
+
+export async function fetchListing(
+  id: string | number,
+): Promise<{ listing: Listing | null; error: string | null }> {
+  try {
+    const backendUrl = getBackendBaseUrl();
+    const endpoint = new URL(`/api/listings/${id}`, `${backendUrl}/`).toString();
+
+    const response = await fetch(endpoint, {
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+
+    if (response.status === 404) {
+      return { listing: null, error: "Not found" };
+    }
+
+    if (!response.ok) {
+      throw new Error(`Backend returned ${response.status}`);
+    }
+
+    const payload = (await response.json()) as { data: Listing };
+    return { listing: payload.data, error: null };
+  } catch (error) {
+    return {
+      listing: null,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+export async function fetchListingAvailability(
+  id: string | number,
+): Promise<{ data: AvailabilityPeriod[]; error: string | null }> {
+  try {
+    const backendUrl = getBackendBaseUrl();
+    const endpoint = new URL(`/api/listings/${id}/availability`, `${backendUrl}/`).toString();
+
+    const response = await fetch(endpoint, {
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Backend returned ${response.status}`);
+    }
+
+    const payload = (await response.json()) as { data: AvailabilityPeriod[] };
+    return { data: payload.data, error: null };
+  } catch (error) {
+    return {
+      data: [],
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+export async function fetchUserBookings(
+  token: string,
+): Promise<{ bookings: Booking[] | null; error: string | null }> {
+  try {
+    const backendUrl = getBackendBaseUrl();
+    const endpoint = new URL("/api/user/bookings", `${backendUrl}/`).toString();
+
+    const response = await fetch(endpoint, {
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Backend returned ${response.status}`);
+    }
+
+    const payload = (await response.json()) as { data: Booking[] };
+    return { bookings: payload.data, error: null };
+  } catch (error) {
+    return {
+      bookings: null,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+export async function fetchUserBooking(
+  id: string | number,
+  token: string,
+): Promise<{ booking: Booking | null; error: string | null }> {
+  try {
+    const backendUrl = getBackendBaseUrl();
+    const endpoint = new URL(`/api/user/bookings/${id}`, `${backendUrl}/`).toString();
+
+    const response = await fetch(endpoint, {
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 404) {
+      return { booking: null, error: "Not found" };
+    }
+
+    if (!response.ok) {
+      throw new Error(`Backend returned ${response.status}`);
+    }
+
+    const payload = (await response.json()) as { data: Booking };
+    return { booking: payload.data, error: null };
+  } catch (error) {
+    return {
+      booking: null,
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }

@@ -5,11 +5,17 @@ import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/auth-form";
 import { AUTH_COOKIE_NAME, decodeAuthSession } from "@/lib/auth-session";
 
-export default async function RegisterPage() {
+type RegisterPageProps = {
+  searchParams?: Promise<{ redirect?: string }>;
+};
+
+export default async function RegisterPage({ searchParams }: RegisterPageProps) {
   const session = decodeAuthSession((await cookies()).get(AUTH_COOKIE_NAME)?.value);
+  const params = (await searchParams) ?? {};
+  const redirectTo = params.redirect ?? undefined;
 
   if (session) {
-    redirect("/");
+    redirect(redirectTo ?? "/");
   }
 
   return (
@@ -20,7 +26,7 @@ export default async function RegisterPage() {
             airbnb
           </Link>
           <Link
-            href="/login"
+            href={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"}
             className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
           >
             Log in
@@ -28,7 +34,7 @@ export default async function RegisterPage() {
         </header>
 
         <div className="flex flex-1 items-center justify-center py-12">
-          <AuthForm mode="register" />
+          <AuthForm mode="register" redirectTo={redirectTo} />
         </div>
       </div>
     </main>

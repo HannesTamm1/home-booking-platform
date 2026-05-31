@@ -15,7 +15,7 @@ class ListingController extends Controller
 {
     public function show(Listing $listing): JsonResponse
     {
-        $listing->loadMissing('host');
+        $listing->loadMissing('host', 'photos');
 
         return (new ListingResource($listing))->response();
     }

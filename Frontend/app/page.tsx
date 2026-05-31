@@ -5,10 +5,10 @@ import { AUTH_COOKIE_NAME, decodeAuthSession } from "@/lib/auth-session";
 import { fetchListingsWithFilters } from "@/lib/backend";
 import { SearchForm } from "@/components/search-form";
 
-function formatCurrency(value: number) {
+function formatCurrency(value: number, currency = "EUR") {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency,
     maximumFractionDigits: 0,
   }).format(value);
 }
@@ -19,6 +19,7 @@ type HomeProps = {
     check_in?: string;
     check_out?: string;
     guests?: string;
+    page?: string;
   }>;
 };
 
@@ -28,6 +29,7 @@ export default async function Home({ searchParams }: HomeProps) {
   const guests = params.guests ? Number.parseInt(params.guests, 10) : undefined;
   const checkIn = params.check_in?.trim() || undefined;
   const checkOut = params.check_out?.trim() || undefined;
+  const page = params.page ? Number.parseInt(params.page, 10) : 1;
 
   const { isConnected, error, listings } = await fetchListingsWithFilters({
     perPage: 12,
@@ -35,12 +37,26 @@ export default async function Home({ searchParams }: HomeProps) {
     guests: Number.isNaN(guests) ? undefined : guests,
     checkIn: checkIn && checkOut ? checkIn : undefined,
     checkOut: checkIn && checkOut ? checkOut : undefined,
+    page,
   });
 
   const availableDestinations = listings?.meta.filters.availableDestinations ?? [];
   const selectedDestination = availableDestinations.includes(params.destination ?? "")
     ? params.destination ?? ""
     : "";
+
+  const pagination = listings?.meta.pagination;
+
+  function buildPageUrl(targetPage: number) {
+    const sp = new URLSearchParams();
+    if (params.destination) sp.set("destination", params.destination);
+    if (params.check_in) sp.set("check_in", params.check_in);
+    if (params.check_out) sp.set("check_out", params.check_out);
+    if (params.guests) sp.set("guests", params.guests);
+    if (targetPage > 1) sp.set("page", String(targetPage));
+    const qs = sp.toString();
+    return qs ? `/?${qs}` : "/";
+  }
 
   return (
     <main className="min-h-screen bg-stone-50 text-neutral-900">
@@ -67,6 +83,12 @@ export default async function Home({ searchParams }: HomeProps) {
                     Admin
                   </Link>
                 )}
+                <Link
+                  href="/trips"
+                  className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+                >
+                  Trips
+                </Link>
                 <Link
                   href="/settings"
                   className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
@@ -129,50 +151,77 @@ export default async function Home({ searchParams }: HomeProps) {
               </div>
 
               {listings.data.length ? (
-                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                  {listings.data.map((listing) => (
-                    <article
-                      key={listing.id}
-                      className="overflow-hidden rounded-[1.75rem] border border-neutral-200 bg-white shadow-[0_16px_48px_rgba(0,0,0,0.05)]"
-                    >
-                      <div className="aspect-[4/3] bg-gradient-to-br from-rose-100 via-orange-50 to-stone-100" />
-                      <div className="space-y-4 p-5">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-sm text-neutral-500">
-                              {listing.destination ?? "Unknown destination"}
-                            </p>
-                            <h2 className="text-lg font-semibold text-neutral-900">
-                              {listing.title}
-                            </h2>
+                <>
+                  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {listings.data.map((listing) => (
+                      <Link
+                        key={listing.id}
+                        href={`/listings/${listing.id}${checkIn && checkOut ? `?check_in=${checkIn}&check_out=${checkOut}${guests ? `&guests=${guests}` : ""}` : ""}`}
+                        className="group overflow-hidden rounded-[1.75rem] border border-neutral-200 bg-white shadow-[0_16px_48px_rgba(0,0,0,0.05)] transition hover:shadow-[0_24px_64px_rgba(0,0,0,0.1)] hover:border-neutral-300"
+                      >
+                        <div className="aspect-[4/3] bg-gradient-to-br from-rose-100 via-orange-50 to-stone-100 transition group-hover:opacity-90" />
+                        <div className="space-y-4 p-5">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-sm text-neutral-500">
+                                {listing.destination ?? "Unknown destination"}
+                              </p>
+                              <h2 className="text-lg font-semibold text-neutral-900 group-hover:text-rose-600 transition">
+                                {listing.title}
+                              </h2>
+                            </div>
+                            <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-700 shrink-0">
+                              {listing.maxGuests} guests
+                            </span>
                           </div>
-                          <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-700">
-                            {listing.maxGuests} guests
-                          </span>
-                        </div>
 
-                        <div className="grid gap-3 sm:grid-cols-2">
-                          <div className="rounded-2xl bg-neutral-50 p-3">
-                            <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">
-                              Price
-                            </p>
-                            <p className="mt-2 text-base font-semibold text-neutral-900">
-                              {formatCurrency(listing.pricePerNight)} / night
-                            </p>
-                          </div>
-                          <div className="rounded-2xl bg-neutral-50 p-3">
-                            <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">
-                              Host
-                            </p>
-                            <p className="mt-2 text-base font-semibold text-neutral-900">
-                              {listing.host.publicLabel}
-                            </p>
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <div className="rounded-2xl bg-neutral-50 p-3">
+                              <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">
+                                Price
+                              </p>
+                              <p className="mt-2 text-base font-semibold text-neutral-900">
+                                {formatCurrency(listing.pricePerNight, listing.currency)} / night
+                              </p>
+                            </div>
+                            <div className="rounded-2xl bg-neutral-50 p-3">
+                              <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">
+                                Host
+                              </p>
+                              <p className="mt-2 text-base font-semibold text-neutral-900">
+                                {listing.host.publicLabel}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
+                      </Link>
+                    ))}
+                  </div>
+
+                  {pagination && pagination.lastPage > 1 && (
+                    <div className="mt-10 flex items-center justify-center gap-3">
+                      {pagination.currentPage > 1 && (
+                        <Link
+                          href={buildPageUrl(pagination.currentPage - 1)}
+                          className="rounded-full border border-neutral-300 px-5 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+                        >
+                          Previous
+                        </Link>
+                      )}
+                      <span className="text-sm text-neutral-500">
+                        Page {pagination.currentPage} of {pagination.lastPage}
+                      </span>
+                      {pagination.hasMorePages && (
+                        <Link
+                          href={buildPageUrl(pagination.currentPage + 1)}
+                          className="rounded-full border border-neutral-300 px-5 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+                        >
+                          Next
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="rounded-[2rem] border border-dashed border-neutral-300 bg-white p-10 text-center">
                   <p className="text-sm text-neutral-500">

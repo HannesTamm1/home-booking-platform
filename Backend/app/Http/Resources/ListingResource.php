@@ -26,6 +26,10 @@ class ListingResource extends JsonResource
             'maxGuests' => $this->max_guests,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
+            'photos' => $this->whenLoaded('photos', fn () => $this->photos->map(fn ($p) => [
+                'url' => $p->url,
+                'caption' => $p->caption,
+            ])->all()),
             'host' => [
                 'publicLabel' => $this->host ? 'Managed by host' : 'Host unavailable',
             ],

@@ -19,6 +19,14 @@ class BookingResource extends JsonResource
         return [
             'id' => $this->id,
             'listingId' => $this->listing_id,
+            'listing' => $this->whenLoaded('listing', fn () => [
+                'id' => $this->listing->id,
+                'title' => $this->listing->title,
+                'destination' => $this->listing->destination,
+                'pricePerNight' => round($this->listing->price_per_night_cents / 100, 2),
+                'currency' => $this->listing->currency,
+                'maxGuests' => $this->listing->max_guests,
+            ]),
             'startDate' => $this->start_date?->toDateString(),
             'endDate' => $this->end_date?->toDateString(),
             'nights' => $this->start_date && $this->end_date
