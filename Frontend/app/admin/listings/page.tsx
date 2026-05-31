@@ -6,17 +6,35 @@ import { AdminListingsModerationClient } from "./admin-listings-client";
 
 export const metadata = { title: "Listing moderation — AirStay Admin" };
 
+export type AdminListingPhoto = {
+  id: number;
+  url: string;
+  caption: string | null;
+  sortOrder: number;
+  isCover: boolean;
+};
+
 export type AdminListing = {
   id: number;
   status: string;
   title: string;
   destination: string | null;
+  address: string | null;
+  description: string | null;
+  houseRules: string | null;
   propertyType: string | null;
   pricePerNight: number;
   currency: string;
   maxGuests: number;
+  bedrooms: number | null;
+  beds: number | null;
+  bathrooms: number | null;
+  amenities: string[];
+  bookingType: string | null;
+  minNights: number | null;
   adminNote: string | null;
   flags: string[];
+  photos: AdminListingPhoto[];
   host: { id?: number; name?: string | null; publicLabel: string };
   metrics: { confirmedBookings: number; confirmedRevenue: number };
   createdAt: string | null;

@@ -177,6 +177,16 @@ export function ListingComposer({ mode, initialData, listingId }: Props) {
     }));
   }
 
+  function reorderPhotos(from: number, to: number) {
+    if (from === to) return;
+    setForm((prev) => {
+      const photos = [...prev.photos];
+      const [moved] = photos.splice(from, 1);
+      photos.splice(to, 0, moved);
+      return { ...prev, photos };
+    });
+  }
+
   function canProceed(): boolean {
     switch (step) {
       case 1: return !!form.propertyType;
@@ -348,6 +358,7 @@ export function ListingComposer({ mode, initialData, listingId }: Props) {
             onStartUpload={startPhotoUpload}
             onFinishUpload={finishPhotoUpload}
             onFailUpload={failPhotoUpload}
+            onReorder={reorderPhotos}
           />
         )}
         {step === 6 && (
@@ -613,6 +624,7 @@ function StepPhotos({
   onStartUpload,
   onFinishUpload,
   onFailUpload,
+  onReorder,
 }: {
   photos: PhotoInput[];
   onAdd: () => void;
@@ -621,7 +633,12 @@ function StepPhotos({
   onStartUpload: (i: number) => void;
   onFinishUpload: (i: number, url: string) => void;
   onFailUpload: (i: number, error: string) => void;
+  onReorder: (from: number, to: number) => void;
 }) {
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [fileDropOver, setFileDropOver] = useState<number | null>(null);
+
   async function handleFile(index: number, file: File) {
     onStartUpload(index);
     try {
@@ -637,81 +654,146 @@ function StepPhotos({
   }
 
   const allFilled = photos.every((p) => p.url && !p.uploading);
+  const uploadedCount = photos.filter((p) => p.url && !p.uploading).length;
 
   return (
     <div>
       <h2 className="text-lg font-semibold dark:text-neutral-50">Add photos of your space</h2>
       <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
         Upload images from your device. The first photo will be the cover.
+        {uploadedCount > 1 && (
+          <span className="ml-1 text-neutral-400 dark:text-neutral-500">Drag to reorder.</span>
+        )}
       </p>
       <div className="mt-5 space-y-3">
-        {photos.map((photo, i) => (
-          <div key={i}>
-            {photo.uploading ? (
-              <div className="flex h-24 items-center justify-center rounded-2xl border border-neutral-200 dark:border-neutral-700">
-                <svg className="h-5 w-5 animate-spin text-rose-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                <span className="ml-2 text-sm text-neutral-500 dark:text-neutral-400">Uploading…</span>
-              </div>
-            ) : photo.url ? (
-              <div className="flex gap-3">
-                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={photo.url} alt="" className="h-full w-full object-cover" />
-                  {i === 0 && (
-                    <span className="absolute bottom-1 left-1 rounded-full bg-black/50 px-1.5 py-0.5 text-[10px] font-medium text-white">
-                      Cover
-                    </span>
-                  )}
+        {photos.map((photo, i) => {
+          const isBeingDragged = dragIndex === i;
+          const isDropTarget = dragOverIndex === i && dragIndex !== null && dragIndex !== i;
+
+          return (
+            <div
+              key={i}
+              className={`transition-opacity ${isBeingDragged ? "opacity-40" : "opacity-100"}`}
+            >
+              {photo.uploading ? (
+                <div className="flex h-24 items-center justify-center rounded-2xl border border-neutral-200 dark:border-neutral-700">
+                  <svg className="h-5 w-5 animate-spin text-rose-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <span className="ml-2 text-sm text-neutral-500 dark:text-neutral-400">Uploading…</span>
                 </div>
-                <div className="flex flex-1 flex-col justify-between gap-1.5">
-                  <input
-                    type="text"
-                    placeholder="Caption (optional)"
-                    value={photo.caption}
-                    onChange={(e) => onUpdateCaption(i, e.target.value)}
-                    className="w-full rounded-2xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500"
-                  />
-                  {photos.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => onRemove(i)}
-                      className="self-start text-xs text-neutral-400 transition hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400"
-                    >
-                      Remove
-                    </button>
-                  )}
+              ) : photo.url ? (
+                <div
+                  draggable
+                  onDragStart={(e) => {
+                    setDragIndex(i);
+                    e.dataTransfer.effectAllowed = "move";
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = "move";
+                    setDragOverIndex(i);
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (dragIndex !== null) onReorder(dragIndex, i);
+                    setDragIndex(null);
+                    setDragOverIndex(null);
+                  }}
+                  onDragEnd={() => {
+                    setDragIndex(null);
+                    setDragOverIndex(null);
+                  }}
+                  className={`flex cursor-grab gap-3 rounded-2xl border-2 p-1 transition active:cursor-grabbing ${
+                    isDropTarget
+                      ? "border-rose-400 bg-rose-50 dark:border-rose-600 dark:bg-rose-950/30"
+                      : "border-transparent"
+                  }`}
+                >
+                  {/* drag handle */}
+                  <div className="flex shrink-0 items-center px-0.5 text-neutral-300 dark:text-neutral-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                      <path d="M7 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm6 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zM7 8a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm6 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2zM7 14a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm6 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                    </svg>
+                  </div>
+                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={photo.url} alt="" className="h-full w-full object-cover" />
+                    {i === 0 && (
+                      <span className="absolute bottom-1 left-1 rounded-full bg-black/50 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                        Cover
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col justify-between gap-1.5">
+                    <input
+                      type="text"
+                      placeholder="Caption (optional)"
+                      value={photo.caption}
+                      onChange={(e) => onUpdateCaption(i, e.target.value)}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className="w-full rounded-2xl border border-neutral-200 bg-white px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500"
+                    />
+                    {photos.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => onRemove(i)}
+                        className="self-start text-xs text-neutral-400 transition hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-neutral-300 py-6 text-center transition hover:border-rose-400 dark:border-neutral-700 dark:hover:border-rose-600">
-                <input
-                  type="file"
-                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
-                  className="sr-only"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
+              ) : (
+                <label
+                  className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed py-6 text-center transition ${
+                    fileDropOver === i
+                      ? "border-rose-400 bg-rose-50 dark:border-rose-600 dark:bg-rose-950/30"
+                      : "border-neutral-300 hover:border-rose-400 dark:border-neutral-700 dark:hover:border-rose-600"
+                  }`}
+                  onDragOver={(e) => {
+                    if (e.dataTransfer.types.includes("Files")) {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = "copy";
+                      setFileDropOver(i);
+                    }
+                  }}
+                  onDragLeave={() => setFileDropOver(null)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setFileDropOver(null);
+                    const file = e.dataTransfer.files[0];
                     if (file) handleFile(i, file);
                   }}
-                />
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-8 w-8 text-neutral-400 dark:text-neutral-500">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                </svg>
-                <div>
-                  <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                    {i === 0 ? "Upload a photo" : `Photo ${i + 1}`}
-                  </p>
-                  <p className="text-xs text-neutral-400 dark:text-neutral-500">JPG, PNG, WebP — max 5 MB</p>
-                </div>
-                {photo.error && (
-                  <p className="text-xs text-red-500 dark:text-red-400">{photo.error}</p>
-                )}
-              </label>
-            )}
-          </div>
-        ))}
+                >
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                    className="sr-only"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFile(i, file);
+                    }}
+                  />
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-8 w-8 text-neutral-400 dark:text-neutral-500">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                      {fileDropOver === i ? "Drop to upload" : i === 0 ? "Upload a photo" : `Photo ${i + 1}`}
+                    </p>
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500">JPG, PNG, WebP — max 5 MB</p>
+                  </div>
+                  {photo.error && (
+                    <p className="text-xs text-red-500 dark:text-red-400">{photo.error}</p>
+                  )}
+                </label>
+              )}
+            </div>
+          );
+        })}
         {photos.length < 10 && allFilled && (
           <button
             type="button"
