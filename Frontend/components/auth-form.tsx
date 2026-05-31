@@ -67,25 +67,25 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
   }
 
   return (
-    <div className="w-full max-w-md rounded-[2rem] border border-neutral-200 bg-white p-8 shadow-[0_24px_80px_rgba(0,0,0,0.08)]">
+    <div className="w-full max-w-md rounded-[2rem] border border-neutral-200 bg-white p-8 shadow-[0_24px_80px_rgba(0,0,0,0.08)] dark:border-neutral-700 dark:bg-neutral-900 dark:shadow-[0_24px_80px_rgba(0,0,0,0.4)]">
       <div className="space-y-3">
         <span className="text-xs font-semibold uppercase tracking-[0.24em] text-rose-500">
           {isLogin ? "Welcome back" : "Create an account"}
         </span>
-        <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
+        <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
           {isLogin ? "Log in to continue" : "Register to start booking"}
         </h1>
-        <p className="text-sm leading-6 text-neutral-500">
+        <p className="text-sm leading-6 text-neutral-500 dark:text-neutral-400">
           {isLogin
             ? "Use your email and password to sign in."
-            : "Keep it simple with the essentials, similar to Airbnb's clean auth flow."}
+            : "Keep it simple — create an account to start booking."}
         </p>
       </div>
 
       <form action={handleSubmit} className="mt-8 space-y-4">
         {!isLogin ? (
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium text-neutral-700">
+            <label htmlFor="name" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
               Full name
             </label>
             <input
@@ -93,7 +93,7 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
               name="name"
               type="text"
               autoComplete="name"
-              className="w-full rounded-2xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900"
+              className="w-full rounded-2xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500 dark:focus:border-neutral-500"
               placeholder="Jane Doe"
             />
             {fieldError("name") ? (
@@ -103,7 +103,7 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
         ) : null}
 
         <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-neutral-700">
+          <label htmlFor="email" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             Email
           </label>
           <input
@@ -113,7 +113,7 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
             autoComplete="email"
             aria-invalid={!!fieldError("email")}
             aria-describedby={fieldError("email") ? "email-error" : undefined}
-            className="w-full rounded-2xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus-visible:ring-2 focus-visible:ring-rose-300"
+            className="w-full rounded-2xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus-visible:ring-2 focus-visible:ring-rose-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500 dark:focus:border-neutral-500"
             placeholder="you@example.com"
           />
           {fieldError("email") ? (
@@ -122,7 +122,7 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium text-neutral-700">
+          <label htmlFor="password" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             Password
           </label>
           <input
@@ -132,7 +132,7 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
             autoComplete={isLogin ? "current-password" : "new-password"}
             aria-invalid={!!fieldError("password")}
             aria-describedby={fieldError("password") ? "password-error" : undefined}
-            className="w-full rounded-2xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus-visible:ring-2 focus-visible:ring-rose-300"
+            className="w-full rounded-2xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus-visible:ring-2 focus-visible:ring-rose-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500 dark:focus:border-neutral-500"
             placeholder="At least 8 characters"
           />
           {fieldError("password") ? (
@@ -142,7 +142,7 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
 
         {!isLogin ? (
           <div className="space-y-2">
-            <label htmlFor="password_confirmation" className="text-sm font-medium text-neutral-700">
+            <label htmlFor="password_confirmation" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
               Confirm password
             </label>
             <input
@@ -150,14 +150,14 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
               name="password_confirmation"
               type="password"
               autoComplete="new-password"
-              className="w-full rounded-2xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus-visible:ring-2 focus-visible:ring-rose-300"
+              className="w-full rounded-2xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus-visible:ring-2 focus-visible:ring-rose-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500 dark:focus:border-neutral-500"
               placeholder="Repeat your password"
             />
           </div>
         ) : null}
 
         {generalError ? (
-          <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+          <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-400">
             {generalError}
           </div>
         ) : null}
@@ -171,7 +171,7 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-neutral-500">
+      <p className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
         {isLogin ? "Need an account?" : "Already have an account?"}{" "}
         <Link
           href={
@@ -179,7 +179,7 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
               ? redirectTo ? `/register?redirect=${encodeURIComponent(redirectTo)}` : "/register"
               : redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"
           }
-          className="font-semibold text-neutral-900 underline underline-offset-4"
+          className="font-semibold text-neutral-900 underline underline-offset-4 dark:text-neutral-100"
         >
           {isLogin ? "Register" : "Log in"}
         </Link>

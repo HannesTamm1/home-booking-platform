@@ -30,15 +30,15 @@ export default async function HostListingsPage() {
   const { listings, error } = await fetchHostListings(session.token);
 
   return (
-    <main className="min-h-screen bg-stone-50 text-neutral-900">
+    <main className="min-h-screen bg-stone-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50">
       <div className="mx-auto flex w-full max-w-5xl flex-col px-4 py-8 sm:px-6">
         <header className="mb-8 flex items-center justify-between">
           <div>
             <Link href="/" className="text-xl font-semibold tracking-tight text-rose-500">
-              airbnb
+              airbaba
             </Link>
             <h1 className="mt-3 text-2xl font-semibold tracking-tight">My listings</h1>
-            <p className="mt-1 text-sm text-neutral-500">
+            <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
               Manage your properties and track their performance.
             </p>
           </div>
@@ -51,16 +51,16 @@ export default async function HostListingsPage() {
         </header>
 
         {error && (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-600">
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-600 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-400">
             {error}
           </div>
         )}
 
         {!error && listings && listings.length === 0 && (
-          <div className="rounded-[2rem] border border-dashed border-neutral-300 bg-white p-12 text-center">
+          <div className="rounded-[2rem] border border-dashed border-neutral-300 bg-white p-12 text-center dark:border-neutral-700 dark:bg-neutral-900">
             <p className="text-2xl">🏠</p>
-            <p className="mt-3 text-sm font-medium text-neutral-700">No listings yet</p>
-            <p className="mt-1 text-sm text-neutral-500">
+            <p className="mt-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">No listings yet</p>
+            <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
               Create your first listing and start welcoming guests.
             </p>
             <Link
@@ -79,9 +79,9 @@ export default async function HostListingsPage() {
               return (
                 <div
                   key={listing.id}
-                  className="overflow-hidden rounded-[1.75rem] border border-neutral-200 bg-white shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
+                  className="overflow-hidden rounded-[1.75rem] border border-neutral-200 bg-white shadow-[0_8px_24px_rgba(0,0,0,0.04)] dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none"
                 >
-                  <div className="relative aspect-[4/3] bg-gradient-to-br from-rose-100 via-orange-50 to-stone-100">
+                  <div className="relative aspect-[4/3] bg-gradient-to-br from-rose-100 via-orange-50 to-stone-100 dark:from-rose-950 dark:via-neutral-900 dark:to-neutral-800">
                     {listing.photos && listing.photos.length > 0 && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -96,24 +96,24 @@ export default async function HostListingsPage() {
                   </div>
 
                   <div className="p-5">
-                    <h2 className="truncate text-base font-semibold text-neutral-900">
+                    <h2 className="truncate text-base font-semibold text-neutral-900 dark:text-neutral-50">
                       {listing.title}
                     </h2>
-                    <p className="mt-0.5 text-sm text-neutral-500">
+                    <p className="mt-0.5 text-sm text-neutral-500 dark:text-neutral-400">
                       {listing.destination ?? "No destination"} &middot;{" "}
                       {listing.maxGuests} guests
                     </p>
 
                     <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                      <div className="rounded-xl bg-neutral-50 p-2.5">
-                        <p className="text-neutral-400">Price / night</p>
-                        <p className="mt-1 font-semibold text-neutral-800">
+                      <div className="rounded-xl bg-neutral-50 p-2.5 dark:bg-neutral-800">
+                        <p className="text-neutral-400 dark:text-neutral-500">Price / night</p>
+                        <p className="mt-1 font-semibold text-neutral-800 dark:text-neutral-100">
                           €{listing.pricePerNight.toFixed(0)}
                         </p>
                       </div>
-                      <div className="rounded-xl bg-neutral-50 p-2.5">
-                        <p className="text-neutral-400">Confirmed bookings</p>
-                        <p className="mt-1 font-semibold text-neutral-800">
+                      <div className="rounded-xl bg-neutral-50 p-2.5 dark:bg-neutral-800">
+                        <p className="text-neutral-400 dark:text-neutral-500">Confirmed bookings</p>
+                        <p className="mt-1 font-semibold text-neutral-800 dark:text-neutral-100">
                           {listing.metrics.confirmedBookings}
                         </p>
                       </div>

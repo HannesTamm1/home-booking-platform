@@ -5,6 +5,10 @@ import { notFound } from "next/navigation";
 import { AUTH_COOKIE_NAME, decodeAuthSession } from "@/lib/auth-session";
 import { fetchListing, fetchListingAvailability } from "@/lib/backend";
 import { BookingPanel } from "./booking-panel";
+import { PhotoGallery } from "@/components/photo-gallery";
+import { ListingMap } from "@/components/listing-map";
+import { ContactHostModal } from "@/components/contact-host-modal";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 function formatCurrency(value: number, currency: string) {
   return new Intl.NumberFormat("en-US", {
@@ -40,26 +44,33 @@ export default async function ListingDetailPage({
   const listing = listingResult.listing;
   const blockedPeriods = availabilityResult.data;
   const defaultGuests = sp.guests ? Number.parseInt(sp.guests, 10) : 1;
+  const photos = listing.photos ?? [];
 
   return (
-    <main className="min-h-screen bg-stone-50 text-neutral-900">
+    <main className="min-h-screen bg-stone-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50">
       <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-        <header className="flex items-center justify-between border-b border-neutral-200 pb-6">
+        <header className="flex items-center justify-between border-b border-neutral-200 pb-6 dark:border-neutral-800">
           <Link href="/" className="text-2xl font-semibold tracking-tight text-rose-500">
-            airbnb
+            airbaba
           </Link>
           <div className="flex items-center gap-3">
             {session ? (
               <>
                 <Link
+                  href="/messages"
+                  className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-400 dark:hover:text-white"
+                >
+                  Messages
+                </Link>
+                <Link
                   href="/trips"
-                  className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+                  className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-400 dark:hover:text-white"
                 >
                   Trips
                 </Link>
                 <Link
                   href="/settings"
-                  className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+                  className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-400 dark:hover:text-white"
                 >
                   Settings
                 </Link>
@@ -68,22 +79,23 @@ export default async function ListingDetailPage({
               <>
                 <Link
                   href="/login"
-                  className="rounded-full px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/register"
-                  className="rounded-full border border-neutral-900 bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-800"
+                  className="rounded-full border border-neutral-900 bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-800 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white"
                 >
                   Register
                 </Link>
               </>
             )}
+            <ThemeToggle />
           </div>
         </header>
 
-        <nav className="mt-4 mb-6 text-sm text-neutral-500">
+        <nav className="mt-4 mb-6 text-sm text-neutral-500 dark:text-neutral-400">
           <Link href="/" className="hover:text-neutral-900 hover:underline">
             Home
           </Link>
@@ -103,39 +115,50 @@ export default async function ListingDetailPage({
         </nav>
 
         <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">{listing.title}</h1>
-        <p className="mt-1 text-sm text-neutral-500">{listing.destination ?? "Unknown destination"}</p>
+        <div className="mt-1 flex items-center gap-3 text-sm text-neutral-500">
+          {listing.ratingAverage && (
+            <span className="flex items-center gap-1 font-medium text-neutral-900">
+              ★ {listing.ratingAverage.toFixed(2)}
+              <span className="font-normal text-neutral-500">({listing.ratingCount} reviews)</span>
+            </span>
+          )}
+          {listing.ratingAverage && listing.address && <span>·</span>}
+          {listing.address && <span>{listing.address}</span>}
+          {!listing.address && listing.destination && <span>{listing.destination}</span>}
+        </div>
 
-        <div className="mt-6 overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-100 via-orange-50 to-stone-100 aspect-[16/7]" />
+        <PhotoGallery photos={photos} title={listing.title} />
 
         <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_380px]">
           <div className="space-y-8">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-6">
+            {/* Host section */}
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-6 dark:border-neutral-800">
               <div>
                 <h2 className="text-xl font-semibold text-neutral-900">
-                  {listing.host.publicLabel}
+                  Hosted by {listing.host.publicLabel}
                 </h2>
                 <p className="mt-1 text-sm text-neutral-500">
-                  Up to {listing.maxGuests} guest{listing.maxGuests === 1 ? "" : "s"}
+                  Up to {listing.maxGuests} guest{listing.maxGuests === 1 ? "" : "s"} ·{" "}
+                  {listing.bedrooms} bedroom{listing.bedrooms === 1 ? "" : "s"} ·{" "}
+                  {listing.beds} bed{listing.beds === 1 ? "" : "s"}
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-neutral-200 flex items-center justify-center text-neutral-500">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
-                  <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clipRule="evenodd" />
-                </svg>
+              <div className="h-14 w-14 rounded-full bg-gradient-to-br from-rose-400 to-orange-300 flex items-center justify-center text-white text-xl font-semibold shadow-sm">
+                {listing.host.publicLabel.charAt(0).toUpperCase()}
               </div>
             </div>
 
             {listing.description && (
               <div>
-                <h3 className="text-lg font-semibold text-neutral-900">About this place</h3>
-                <p className="mt-3 text-sm leading-7 text-neutral-600 whitespace-pre-line">
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">About this place</h3>
+                <p className="mt-3 text-sm leading-7 text-neutral-600 whitespace-pre-line dark:text-neutral-400">
                   {listing.description}
                 </p>
               </div>
             )}
 
             <div>
-              <h3 className="text-lg font-semibold text-neutral-900">Details</h3>
+              <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">Details</h3>
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {[
                   { label: "Guests", value: `${listing.maxGuests} max` },
@@ -144,12 +167,12 @@ export default async function ListingDetailPage({
                   { label: "Bathrooms", value: String(listing.bathrooms ?? 1) },
                   { label: "Price", value: `${formatCurrency(listing.pricePerNight, listing.currency)} / night` },
                   ...(listing.minNights > 1 ? [{ label: "Min stay", value: `${listing.minNights} nights` }] : []),
-                  ...(listing.destination ? [{ label: "Location", value: listing.destination }] : []),
-                  ...(listing.ratingAverage ? [{ label: "Rating", value: `★ ${listing.ratingAverage.toFixed(2)} (${listing.ratingCount} reviews)` }] : []),
+                  ...(listing.bookingType === "request" ? [{ label: "Booking", value: "Request required" }] : []),
+                  ...(listing.weekendPricePerNight ? [{ label: "Weekend", value: `${formatCurrency(listing.weekendPricePerNight, listing.currency)} / night` }] : []),
                 ].map(({ label, value }) => (
-                  <div key={label} className="rounded-2xl bg-white border border-neutral-200 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">{label}</p>
-                    <p className="mt-2 text-sm font-semibold text-neutral-900">{value}</p>
+                  <div key={label} className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-800">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">{label}</p>
+                    <p className="mt-2 text-sm font-semibold text-neutral-900 dark:text-neutral-50">{value}</p>
                   </div>
                 ))}
               </div>
@@ -157,10 +180,10 @@ export default async function ListingDetailPage({
 
             {listing.amenities && listing.amenities.length > 0 && (
               <div>
-                <h3 className="text-lg font-semibold text-neutral-900">Amenities</h3>
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">What this place offers</h3>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {listing.amenities.map((a) => (
-                    <span key={a} className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-700">
+                    <span key={a} className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
                       {a}
                     </span>
                   ))}
@@ -170,21 +193,21 @@ export default async function ListingDetailPage({
 
             {listing.houseRules && (
               <div>
-                <h3 className="text-lg font-semibold text-neutral-900">House rules</h3>
-                <p className="mt-3 text-sm leading-7 text-neutral-600 whitespace-pre-line">{listing.houseRules}</p>
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">House rules</h3>
+                <p className="mt-3 text-sm leading-7 text-neutral-600 whitespace-pre-line dark:text-neutral-400">{listing.houseRules}</p>
               </div>
             )}
 
             {blockedPeriods.length > 0 && (
               <div>
-                <h3 className="text-lg font-semibold text-neutral-900">Availability</h3>
-                <p className="mt-2 text-sm text-neutral-500">
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">Availability</h3>
+                <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
                   The following date ranges are already booked:
                 </p>
                 <ul className="mt-3 space-y-2">
                   {blockedPeriods.map((p, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm text-neutral-700">
-                      <span className="h-1.5 w-1.5 rounded-full bg-rose-400 shrink-0" />
+                    <li key={i} className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-rose-400" />
                       {p.startDate} → {p.endDate}
                     </li>
                   ))}
@@ -192,24 +215,43 @@ export default async function ListingDetailPage({
               </div>
             )}
 
-            {listing.latitude !== null && listing.longitude !== null && (
+            {/* Map */}
+            {(listing.address || (listing.latitude != null && listing.longitude != null)) && (
               <div>
-                <h3 className="text-lg font-semibold text-neutral-900">Location</h3>
-                <div className="mt-3 overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 aspect-[16/7] flex items-center justify-center">
-                  <a
-                    href={`https://www.google.com/maps?q=${listing.latitude},${listing.longitude}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col items-center gap-2 text-sm font-medium text-rose-500 hover:text-rose-600"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-8 w-8">
-                      <path fillRule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-2.003 3.5-4.697 3.5-8.333 0-4.645-3.51-8.25-8-8.25S4 2.659 4 7.333c0 3.636 1.556 6.33 3.5 8.333a19.58 19.58 0 0 0 2.683 2.282 16.975 16.975 0 0 0 1.144.742ZM12 13.25a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" clipRule="evenodd" />
-                    </svg>
-                    View on Google Maps
-                  </a>
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">Location</h3>
+                <div className="mt-3">
+                  <ListingMap
+                    address={listing.address ?? listing.destination ?? ""}
+                    lat={listing.latitude}
+                    lng={listing.longitude}
+                  />
                 </div>
               </div>
             )}
+
+            {/* Contact host */}
+            <div className="rounded-[1.75rem] border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-900">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-orange-300 text-lg font-semibold text-white">
+                  {listing.host.publicLabel.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="font-semibold text-neutral-900 dark:text-neutral-50">{listing.host.publicLabel}</p>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400">Your host</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
+                Have questions about this listing? Send {listing.host.publicLabel.split(" ")[0]} a message.
+              </p>
+              <div className="mt-4">
+                <ContactHostModal
+                  listingId={listing.id}
+                  hostName={listing.host.publicLabel}
+                  listingTitle={listing.title}
+                  isLoggedIn={!!session}
+                />
+              </div>
+            </div>
           </div>
 
           <div className="lg:sticky lg:top-6 lg:self-start">

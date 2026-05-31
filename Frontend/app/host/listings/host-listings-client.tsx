@@ -48,14 +48,14 @@ export function HostListingsClient({ listing }: Props) {
       <div className="flex gap-2">
         <Link
           href={`/host/listings/${listing.id}/edit`}
-          className="flex-1 rounded-xl border border-neutral-300 px-3 py-2 text-center text-xs font-semibold text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+          className="flex-1 rounded-xl border border-neutral-300 px-3 py-2 text-center text-xs font-semibold text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-400 dark:hover:text-white"
         >
           Edit
         </Link>
         {listing.status === "published" && (
           <Link
             href={`/host/listings/${listing.id}/calendar`}
-            className="flex-1 rounded-xl border border-neutral-300 px-3 py-2 text-center text-xs font-semibold text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+            className="flex-1 rounded-xl border border-neutral-300 px-3 py-2 text-center text-xs font-semibold text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-400 dark:hover:text-white"
           >
             Calendar
           </Link>
@@ -74,7 +74,7 @@ export function HostListingsClient({ listing }: Props) {
           type="button"
           onClick={handleDelete}
           disabled={isPending}
-          className="rounded-xl border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-400 transition hover:border-red-300 hover:text-red-500 disabled:opacity-70"
+          className="rounded-xl border border-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-400 transition hover:border-red-300 hover:text-red-500 disabled:opacity-70 dark:border-neutral-700 dark:text-neutral-500 dark:hover:border-red-700"
         >
           Delete
         </button>

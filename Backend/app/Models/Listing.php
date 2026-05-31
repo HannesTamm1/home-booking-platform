@@ -16,6 +16,7 @@ class Listing extends Model
         'status',
         'title',
         'destination',
+        'address',
         'description',
         'house_rules',
         'property_type',

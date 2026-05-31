@@ -40,10 +40,10 @@ export function AdminListingsModerationClient({ initialListings }: Props) {
 
   if (listings.length === 0) {
     return (
-      <div className="rounded-[2rem] border border-dashed border-neutral-300 bg-white p-12 text-center">
+      <div className="rounded-[2rem] border border-dashed border-neutral-300 bg-white p-12 text-center dark:border-neutral-700 dark:bg-neutral-900">
         <p className="text-2xl">✅</p>
-        <p className="mt-3 text-sm font-medium text-neutral-700">No listings pending review</p>
-        <p className="mt-1 text-sm text-neutral-500">All caught up.</p>
+        <p className="mt-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">No listings pending review</p>
+        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">All caught up.</p>
       </div>
     );
   }
@@ -51,37 +51,37 @@ export function AdminListingsModerationClient({ initialListings }: Props) {
   return (
     <div className="space-y-4">
       {error && (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-400">
           {error}
         </div>
       )}
       {listings.map((listing) => {
         const busy = !!loading[listing.id];
         return (
-          <div key={listing.id} className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+          <div key={listing.id} className="overflow-hidden rounded-2xl border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
             <div className="p-5">
               <div className="flex flex-wrap items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-base font-semibold text-neutral-900 truncate">{listing.title}</h3>
+                    <h3 className="text-base font-semibold text-neutral-900 truncate dark:text-neutral-50">{listing.title}</h3>
                     {listing.flags.map((flag) => (
                       <span key={flag} className="shrink-0 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
                         ⚠ {FLAG_LABELS[flag] ?? flag}
                       </span>
                     ))}
                   </div>
-                  <p className="mt-1 text-sm text-neutral-500">
+                  <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                     {listing.propertyType ?? "Property"} · {listing.destination ?? "Unknown"} ·{" "}
                     {listing.maxGuests} guests · €{listing.pricePerNight}/night
                   </p>
-                  <p className="mt-1 text-xs text-neutral-400">
+                  <p className="mt-1 text-xs text-neutral-400 dark:text-neutral-500">
                     Host: {listing.host.name ?? listing.host.publicLabel}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-xs text-neutral-400">Submitted</p>
                   <p className="text-xs font-medium text-neutral-700">
-                    {listing.createdAt ? new Date(listing.createdAt).toLocaleDateString() : "—"}
+                    {listing.createdAt ? new Date(listing.createdAt).toLocaleDateString('en-GB') : "—"}
                   </p>
                 </div>
               </div>
@@ -92,7 +92,7 @@ export function AdminListingsModerationClient({ initialListings }: Props) {
                   value={notes[listing.id] ?? ""}
                   onChange={(e) => setNotes((n) => ({ ...n, [listing.id]: e.target.value }))}
                   rows={2}
-                  className="w-full resize-none rounded-xl border border-neutral-200 px-3 py-2 text-sm outline-none transition focus:border-neutral-400"
+                  className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500 dark:focus:border-neutral-600"
                 />
                 <div className="flex gap-2">
                   <button

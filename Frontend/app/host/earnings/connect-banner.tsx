@@ -20,18 +20,18 @@ export function ConnectBanner() {
 
   if (done) {
     return (
-      <div className="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4">
-        <p className="text-sm font-semibold text-green-800">✓ Stripe Connect account set up (demo mode).</p>
+      <div className="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950">
+        <p className="text-sm font-semibold text-green-800 dark:text-green-300">✓ Stripe Connect account set up (demo mode).</p>
       </div>
     );
   }
 
   return (
-    <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-5">
+    <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-800 dark:bg-amber-950">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-amber-900">Connect your Stripe account to receive payouts</p>
-          <p className="mt-1 text-sm text-amber-700">
+          <p className="text-sm font-semibold text-amber-900 dark:text-amber-300">Connect your Stripe account to receive payouts</p>
+          <p className="mt-1 text-sm text-amber-700 dark:text-amber-400">
             In production this would redirect you to Stripe's onboarding flow.
             Click below to simulate the setup in demo mode.
           </p>

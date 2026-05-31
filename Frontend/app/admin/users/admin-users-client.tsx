@@ -65,7 +65,7 @@ export function AdminUsersClient({ initialUsers, initialMeta, initialSearch }: P
           placeholder="Search by name or email…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 rounded-2xl border border-neutral-300 px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100"
+          className="flex-1 rounded-2xl border border-neutral-300 bg-white px-4 py-2.5 text-sm focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500"
         />
         <button
           type="submit"
@@ -76,37 +76,37 @@ export function AdminUsersClient({ initialUsers, initialMeta, initialSearch }: P
       </form>
 
       {error && (
-        <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+        <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-400">
           {error}
         </div>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+      <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-neutral-100">
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-neutral-500">User</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-neutral-500">Role</th>
+            <tr className="border-b border-neutral-100 dark:border-neutral-800">
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">User</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">Role</th>
               <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-widest text-neutral-500">Bookings</th>
               <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-widest text-neutral-500">Listings</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-neutral-500">Status</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">Status</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.id} className="border-b border-neutral-50 last:border-0 hover:bg-neutral-50">
+              <tr key={user.id} className="border-b border-neutral-50 last:border-0 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800">
                 <td className="px-4 py-3">
-                  <p className="font-medium text-neutral-900">{user.name ?? "—"}</p>
-                  <p className="text-xs text-neutral-400">{user.email}</p>
+                  <p className="font-medium text-neutral-900 dark:text-neutral-50">{user.name ?? "—"}</p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500">{user.email}</p>
                 </td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${ROLE_STYLES[user.role] ?? "bg-neutral-100 text-neutral-600"}`}>
                     {user.role}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-center text-neutral-700">{user.bookingCount}</td>
-                <td className="px-4 py-3 text-center text-neutral-700">{user.listingCount}</td>
+                <td className="px-4 py-3 text-center text-neutral-700 dark:text-neutral-300">{user.bookingCount}</td>
+                <td className="px-4 py-3 text-center text-neutral-700 dark:text-neutral-300">{user.listingCount}</td>
                 <td className="px-4 py-3">
                   {user.isSuspended ? (
                     <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-600">
@@ -144,7 +144,7 @@ export function AdminUsersClient({ initialUsers, initialMeta, initialSearch }: P
         </table>
 
         {users.length === 0 && (
-          <div className="p-8 text-center text-sm text-neutral-400">No users found.</div>
+          <div className="p-8 text-center text-sm text-neutral-400 dark:text-neutral-500">No users found.</div>
         )}
       </div>
 

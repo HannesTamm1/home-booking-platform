@@ -27,6 +27,7 @@ class ListingIndexController extends Controller
                     'guests' => $filters['guests'],
                     'checkIn' => $filters['check_in'],
                     'checkOut' => $filters['check_out'],
+                    'propertyType' => $filters['property_type'],
                     'availableDestinations' => $paginateListings->destinations(),
                 ],
                 'pagination' => [

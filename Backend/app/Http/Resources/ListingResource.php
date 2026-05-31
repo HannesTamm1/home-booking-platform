@@ -21,6 +21,7 @@ class ListingResource extends JsonResource
             'status' => $this->status,
             'title' => $this->title,
             'destination' => $this->destination,
+            'address' => $this->address,
             'description' => $this->description,
             'houseRules' => $this->house_rules,
             'propertyType' => $this->property_type,
@@ -50,6 +51,7 @@ class ListingResource extends JsonResource
             'host' => $this->whenLoaded('host', fn () => [
                 'id' => $this->host->id,
                 'name' => $this->host->name,
+                'email' => $this->host->email,
                 'publicLabel' => $this->host->name ?? 'Your host',
             ], ['publicLabel' => 'Managed by host']),
             'metrics' => [

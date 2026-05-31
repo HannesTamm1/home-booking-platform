@@ -28,6 +28,7 @@ class ListListingsRequest extends FormRequest
             'guests' => ['sometimes', 'integer', 'min:1'],
             'check_in' => ['sometimes', 'date', 'required_with:check_out'],
             'check_out' => ['sometimes', 'date', 'required_with:check_in', 'after:check_in'],
+            'property_type' => ['sometimes', 'string', 'in:apartment,house,villa,cabin,cottage,loft,studio'],
         ];
     }
 
@@ -37,7 +38,7 @@ class ListListingsRequest extends FormRequest
     }
 
     /**
-     * @return array{destination: string|null, guests: int|null, check_in: string|null, check_out: string|null}
+     * @return array{destination: string|null, guests: int|null, check_in: string|null, check_out: string|null, property_type: string|null}
      */
     public function filters(): array
     {
@@ -46,6 +47,7 @@ class ListListingsRequest extends FormRequest
             'guests' => $this->filled('guests') ? $this->integer('guests') : null,
             'check_in' => $this->input('check_in'),
             'check_out' => $this->input('check_out'),
+            'property_type' => $this->filled('property_type') ? $this->string('property_type')->value() : null,
         ];
     }
 }

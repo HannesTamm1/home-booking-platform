@@ -47,7 +47,7 @@ export function SearchForm({
   }
 
   const fieldClass =
-    "h-12 w-full rounded-full border border-neutral-300 bg-white px-4 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus-visible:ring-2 focus-visible:ring-rose-300";
+    "h-12 w-full rounded-full border border-neutral-300 bg-white px-4 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus-visible:ring-2 focus-visible:ring-rose-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-50 dark:[color-scheme:dark] dark:focus:border-neutral-500";
 
   return (
     <form action="/" method="get" aria-label="Search for stays" className="mt-6 flex flex-col gap-3">

@@ -50,14 +50,14 @@ export default async function HostBookingsPage() {
     <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight">Reservations</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
           All bookings across your listings.
         </p>
       </div>
 
       {bookings.length === 0 && (
-        <div className="rounded-[2rem] border border-dashed border-neutral-300 bg-white p-12 text-center">
-          <p className="text-sm text-neutral-500">No reservations yet.</p>
+        <div className="rounded-[2rem] border border-dashed border-neutral-300 bg-white p-12 text-center dark:border-neutral-700 dark:bg-neutral-900">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">No reservations yet.</p>
         </div>
       )}
 
@@ -77,32 +77,32 @@ export default async function HostBookingsPage() {
 function BookingSection({ title, bookings }: { title: string; bookings: HostBooking[] }) {
   return (
     <div className="mb-8">
-      <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-500">
+      <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
         {title} ({bookings.length})
       </h2>
-      <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+      <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-neutral-100">
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-neutral-400">Listing</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-neutral-400">Dates</th>
-              <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-widest text-neutral-400">Revenue</th>
-              <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-widest text-neutral-400">Status</th>
+            <tr className="border-b border-neutral-100 dark:border-neutral-800">
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">Listing</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">Dates</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">Revenue</th>
+              <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">Status</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
             {bookings.map((b) => (
-              <tr key={b.id} className="border-b border-neutral-50 last:border-0 hover:bg-neutral-50">
+              <tr key={b.id} className="border-b border-neutral-50 last:border-0 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800">
                 <td className="px-4 py-3">
-                  <p className="font-medium text-neutral-900 truncate max-w-[200px]">{b.listingTitle}</p>
-                  <p className="text-xs text-neutral-400">{b.listingDestination}</p>
+                  <p className="max-w-[200px] truncate font-medium text-neutral-900 dark:text-neutral-50">{b.listingTitle}</p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500">{b.listingDestination}</p>
                 </td>
-                <td className="px-4 py-3 text-neutral-700">
+                <td className="px-4 py-3 text-neutral-700 dark:text-neutral-300">
                   {b.startDate} → {b.endDate}
-                  <span className="ml-1 text-xs text-neutral-400">({b.nights}n)</span>
+                  <span className="ml-1 text-xs text-neutral-400 dark:text-neutral-500">({b.nights}n)</span>
                 </td>
-                <td className="px-4 py-3 text-right font-semibold text-neutral-900">
+                <td className="px-4 py-3 text-right font-semibold text-neutral-900 dark:text-neutral-50">
                   €{b.totalPrice.toFixed(0)}
                 </td>
                 <td className="px-4 py-3 text-center">

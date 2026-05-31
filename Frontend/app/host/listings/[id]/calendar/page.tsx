@@ -55,15 +55,15 @@ export default async function ListingCalendarPage({
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <Link href="/host/listings" className="text-sm text-neutral-500 hover:text-neutral-900">
+          <Link href="/host/listings" className="text-sm text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white">
             ← My listings
           </Link>
           <h1 className="mt-2 text-xl font-semibold tracking-tight">{listing.title}</h1>
-          <p className="text-sm text-neutral-500">Calendar & availability</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">Calendar & availability</p>
         </div>
         <Link
           href={`/host/listings/${id}/edit`}
-          className="rounded-2xl border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900"
+          className="rounded-2xl border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-400"
         >
           Edit listing
         </Link>

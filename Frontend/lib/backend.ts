@@ -17,6 +17,7 @@ export type Listing = {
   status: string;
   title: string;
   destination: string | null;
+  address: string | null;
   description: string | null;
   houseRules: string | null;
   propertyType: string | null;
@@ -38,6 +39,7 @@ export type Listing = {
   host: {
     id?: number;
     name?: string | null;
+    email?: string;
     publicLabel: string;
   };
   metrics: {
@@ -83,6 +85,7 @@ export type ListingsResponse = {
       guests: number | null;
       checkIn: string | null;
       checkOut: string | null;
+      propertyType: string | null;
       availableDestinations: string[];
     };
     pagination: {
@@ -225,6 +228,7 @@ export async function fetchListingsWithFilters({
   checkIn,
   checkOut,
   page,
+  propertyType,
 }: {
   perPage?: number;
   destination?: string;
@@ -232,6 +236,7 @@ export async function fetchListingsWithFilters({
   checkIn?: string;
   checkOut?: string;
   page?: number;
+  propertyType?: string;
 }): Promise<
   | {
       backendUrl: string;
@@ -268,6 +273,10 @@ export async function fetchListingsWithFilters({
   if (checkIn && checkOut) {
     searchParams.set("check_in", checkIn);
     searchParams.set("check_out", checkOut);
+  }
+
+  if (propertyType) {
+    searchParams.set("property_type", propertyType);
   }
 
   let endpoint = backendUrl

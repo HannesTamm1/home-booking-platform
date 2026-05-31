@@ -35,15 +35,15 @@ export default async function ConfirmationPage({ params }: { params: Promise<Par
   }
 
   return (
-    <main className="min-h-screen bg-stone-50 text-neutral-900">
+    <main className="min-h-screen bg-stone-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50">
       <div className="mx-auto w-full max-w-2xl px-4 py-6 sm:px-6 lg:px-8">
-        <header className="flex items-center justify-between border-b border-neutral-200 pb-6">
+        <header className="flex items-center justify-between border-b border-neutral-200 pb-6 dark:border-neutral-800">
           <Link href="/" className="text-2xl font-semibold tracking-tight text-rose-500">
-            airbnb
+            airbaba
           </Link>
           <Link
             href="/trips"
-            className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+            className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-400 dark:hover:text-neutral-100"
           >
             My trips
           </Link>
@@ -66,41 +66,41 @@ export default async function ConfirmationPage({ params }: { params: Promise<Par
         </div>
 
         {booking && (
-          <div className="mt-8 rounded-[2rem] border border-neutral-200 bg-white p-6 shadow-[0_16px_48px_rgba(0,0,0,0.06)]">
+          <div className="mt-8 rounded-[2rem] border border-neutral-200 bg-white p-6 shadow-[0_16px_48px_rgba(0,0,0,0.06)] dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none">
             {booking.listing && (
               <div className="mb-6 flex gap-4">
-                <div className="h-20 w-20 shrink-0 rounded-xl bg-gradient-to-br from-rose-100 via-orange-50 to-stone-100" />
+                <div className="h-20 w-20 shrink-0 rounded-xl bg-gradient-to-br from-rose-100 via-orange-50 to-stone-100 dark:from-rose-950 dark:via-neutral-900 dark:to-neutral-800" />
                 <div>
-                  <p className="text-xs text-neutral-500">{booking.listing.destination ?? "Unknown destination"}</p>
-                  <p className="mt-0.5 text-sm font-semibold text-neutral-900">{booking.listing.title}</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">{booking.listing.destination ?? "Unknown destination"}</p>
+                  <p className="mt-0.5 text-sm font-semibold text-neutral-900 dark:text-neutral-50">{booking.listing.title}</p>
                 </div>
               </div>
             )}
 
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-neutral-500">Check-in</span>
-                <span className="font-medium text-neutral-900">{fmt(booking.startDate)}</span>
+                <span className="text-neutral-500 dark:text-neutral-400">Check-in</span>
+                <span className="font-medium text-neutral-900 dark:text-neutral-100">{fmt(booking.startDate)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-500">Check-out</span>
-                <span className="font-medium text-neutral-900">{fmt(booking.endDate)}</span>
+                <span className="text-neutral-500 dark:text-neutral-400">Check-out</span>
+                <span className="font-medium text-neutral-900 dark:text-neutral-100">{fmt(booking.endDate)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-500">Duration</span>
-                <span className="font-medium text-neutral-900">
+                <span className="text-neutral-500 dark:text-neutral-400">Duration</span>
+                <span className="font-medium text-neutral-900 dark:text-neutral-100">
                   {booking.nights} night{booking.nights === 1 ? "" : "s"}
                 </span>
               </div>
-              <div className="flex justify-between border-t border-neutral-100 pt-3">
-                <span className="text-neutral-500">Total paid</span>
-                <span className="font-semibold text-neutral-900">
+              <div className="flex justify-between border-t border-neutral-100 pt-3 dark:border-neutral-800">
+                <span className="text-neutral-500 dark:text-neutral-400">Total paid</span>
+                <span className="font-semibold text-neutral-900 dark:text-neutral-100">
                   {formatCurrency(booking.totalPrice, booking.currency)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-500">Status</span>
-                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-xs font-semibold text-green-700 capitalize">
+                <span className="text-neutral-500 dark:text-neutral-400">Status</span>
+                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-xs font-semibold text-green-700 capitalize dark:bg-green-950 dark:text-green-400">
                   {booking.status}
                 </span>
               </div>
@@ -117,7 +117,7 @@ export default async function ConfirmationPage({ params }: { params: Promise<Par
           </Link>
           <Link
             href="/"
-            className="flex-1 rounded-2xl border border-neutral-300 py-3 text-center text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+            className="flex-1 rounded-2xl border border-neutral-300 py-3 text-center text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-400 dark:hover:text-neutral-100"
           >
             Browse more stays
           </Link>

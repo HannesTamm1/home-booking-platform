@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AdminBookingController;
+use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\AdminDisputeController;
 use App\Http\Controllers\Api\AdminHostApplicationController;
 use App\Http\Controllers\Api\AdminListingController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Api\HostConnectController;
 use App\Http\Controllers\Api\HostDashboardController;
 use App\Http\Controllers\Api\HostEarningsController;
 use App\Http\Controllers\Api\HostListingController;
+use App\Http\Controllers\Api\PhotoUploadController;
 use App\Http\Controllers\Api\ListingAvailabilityController;
 use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\ListingIndexController;
@@ -36,8 +38,11 @@ Route::get('/listings/{listing}/availability', ListingAvailabilityController::cl
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/password', [UserPasswordController::class, 'update']);
-    Route::post('/user/become-host', BecomeHostController::class);
 
+    Route::get('/conversations', [ConversationController::class, 'index']);
+    Route::post('/conversations', [ConversationController::class, 'store']);
+    Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
+    Route::post('/conversations/{conversation}/reply', [ConversationController::class, 'reply']);
     Route::get('/user/host-application', [HostApplicationController::class, 'show']);
     Route::post('/user/host-application', [HostApplicationController::class, 'store']);
 
@@ -46,6 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/user/bookings/{booking}', [UserBookingController::class, 'destroy']);
 
     // Host
+    Route::post('/host/photos', PhotoUploadController::class);
     Route::get('/host/dashboard', HostDashboardController::class);
     Route::get('/host/earnings', HostEarningsController::class);
     Route::get('/host/connect/status', [HostConnectController::class, 'status']);

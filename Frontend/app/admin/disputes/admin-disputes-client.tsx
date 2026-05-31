@@ -61,19 +61,19 @@ export function AdminDisputesClient({ initialDisputes }: Props) {
   return (
     <div className="space-y-8">
       {error && (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">{error}</div>
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-400">{error}</div>
       )}
 
       {open.length === 0 && (
-        <div className="rounded-[2rem] border border-dashed border-neutral-300 bg-white p-10 text-center">
+        <div className="rounded-[2rem] border border-dashed border-neutral-300 bg-white p-10 text-center dark:border-neutral-700 dark:bg-neutral-900">
           <p className="text-2xl">⚖️</p>
-          <p className="mt-3 text-sm font-medium text-neutral-700">No open disputes</p>
+          <p className="mt-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">No open disputes</p>
         </div>
       )}
 
       {open.length > 0 && (
         <section>
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-500">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
             Open ({open.length})
           </h2>
           <div className="space-y-3">
@@ -99,16 +99,16 @@ export function AdminDisputesClient({ initialDisputes }: Props) {
 
       {resolved.length > 0 && (
         <section>
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-500">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
             Resolved ({resolved.length})
           </h2>
           <div className="space-y-2">
             {resolved.map((d) => (
-              <div key={d.id} className="rounded-2xl border border-neutral-200 bg-white p-4">
+              <div key={d.id} className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-neutral-900">{d.booking?.listingTitle}</p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="truncate font-medium text-neutral-900 dark:text-neutral-50">{d.booking?.listingTitle}</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
                       {d.booking?.guestName} · {d.booking?.startDate} → {d.booking?.endDate}
                     </p>
                   </div>
@@ -122,7 +122,7 @@ export function AdminDisputesClient({ initialDisputes }: Props) {
                   </div>
                 </div>
                 {d.adminNote && (
-                  <p className="mt-2 text-xs text-neutral-400">Note: {d.adminNote}</p>
+                  <p className="mt-2 text-xs text-neutral-400 dark:text-neutral-500">Note: {d.adminNote}</p>
                 )}
               </div>
             ))}
@@ -160,11 +160,11 @@ function DisputeCard({
 }) {
   const b = dispute.booking;
   return (
-    <div className="overflow-hidden rounded-2xl border border-red-200 bg-white">
+    <div className="overflow-hidden rounded-2xl border border-red-200 bg-white dark:border-red-900 dark:bg-neutral-900">
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-start justify-between gap-4 p-5 text-left hover:bg-neutral-50"
+        className="flex w-full items-start justify-between gap-4 p-5 text-left hover:bg-neutral-50 dark:hover:bg-neutral-800"
       >
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -173,33 +173,33 @@ function DisputeCard({
             </span>
             <span className="text-xs text-neutral-400">#{dispute.id}</span>
           </div>
-          <p className="mt-1 truncate font-medium text-neutral-900">{b?.listingTitle ?? "Unknown listing"}</p>
-          <p className="text-xs text-neutral-500">
+          <p className="mt-1 truncate font-medium text-neutral-900 dark:text-neutral-50">{b?.listingTitle ?? "Unknown listing"}</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
             Guest: {b?.guestName ?? b?.guestEmail ?? "?"} ·{" "}
             {b?.startDate} → {b?.endDate} ·{" "}
             Total: €{b?.totalPrice.toFixed(0)}
           </p>
         </div>
-        <span className="shrink-0 text-neutral-400">{expanded ? "▲" : "▼"}</span>
+        <span className="shrink-0 text-neutral-400 dark:text-neutral-500">{expanded ? "▲" : "▼"}</span>
       </button>
 
       {expanded && (
-        <div className="border-t border-neutral-100 px-5 pb-5 pt-4">
-          <div className="mb-4 rounded-xl bg-neutral-50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500">Description</p>
-            <p className="mt-1 text-sm text-neutral-700">{dispute.description}</p>
-            <p className="mt-2 text-xs text-neutral-400">
+        <div className="border-t border-neutral-100 px-5 pb-5 pt-4 dark:border-neutral-800">
+          <div className="mb-4 rounded-xl bg-neutral-50 p-4 dark:bg-neutral-800">
+            <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">Description</p>
+            <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">{dispute.description}</p>
+            <p className="mt-2 text-xs text-neutral-400 dark:text-neutral-500">
               Opened by {dispute.openedBy?.name ?? dispute.openedBy?.email ?? "unknown"} ·{" "}
-              {dispute.createdAt ? new Date(dispute.createdAt).toLocaleDateString() : ""}
+              {dispute.createdAt ? new Date(dispute.createdAt).toLocaleDateString('en-GB') : ""}
             </p>
           </div>
 
           <div className="space-y-3">
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-neutral-700">Resolution</label>
+              <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Resolution</label>
               <div className="space-y-2">
                 {(["refund_guest", "side_with_host", "partial"] as const).map((opt) => (
-                  <label key={opt} className="flex cursor-pointer items-center gap-3 rounded-xl border border-neutral-200 p-3 hover:border-neutral-400">
+                  <label key={opt} className="flex cursor-pointer items-center gap-3 rounded-xl border border-neutral-200 p-3 hover:border-neutral-400 dark:border-neutral-700 dark:hover:border-neutral-500">
                     <input
                       type="radio"
                       name={`resolution-${dispute.id}`}
@@ -209,9 +209,9 @@ function DisputeCard({
                       className="accent-rose-500"
                     />
                     <div>
-                      <p className="text-sm font-medium text-neutral-800">{RESOLUTION_LABELS[opt]}</p>
+                      <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{RESOLUTION_LABELS[opt]}</p>
                       {opt === "refund_guest" && b && (
-                        <p className="text-xs text-neutral-500">Full €{b.totalPrice.toFixed(0)}</p>
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">Full €{b.totalPrice.toFixed(0)}</p>
                       )}
                     </div>
                   </label>
@@ -221,7 +221,7 @@ function DisputeCard({
 
             {resolution === "partial" && (
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-neutral-700">Refund amount (€)</label>
+                <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Refund amount (€)</label>
                 <input
                   type="number"
                   min="0"
@@ -236,7 +236,7 @@ function DisputeCard({
             )}
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-neutral-700">Admin note (optional)</label>
+              <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Admin note (optional)</label>
               <textarea
                 rows={2}
                 value={note}

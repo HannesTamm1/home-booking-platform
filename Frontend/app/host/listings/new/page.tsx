@@ -19,15 +19,15 @@ export default async function NewListingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-stone-50 text-neutral-900">
+    <main className="min-h-screen bg-stone-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50">
       <div className="mx-auto flex w-full max-w-2xl flex-col px-4 py-8 sm:px-6">
         <div className="mb-8 flex items-center justify-between">
           <Link href="/" className="text-xl font-semibold tracking-tight text-rose-500">
-            airbnb
+            airbaba
           </Link>
           <Link
             href="/host/listings"
-            className="text-sm text-neutral-500 transition hover:text-neutral-900"
+            className="text-sm text-neutral-500 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
           >
             ← Back to listings
           </Link>

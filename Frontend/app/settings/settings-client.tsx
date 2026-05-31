@@ -103,12 +103,12 @@ export function SettingsClient({ session, initialApplication }: Props) {
   };
 
   return (
-    <main className="min-h-screen bg-stone-50 text-neutral-900">
+    <main className="min-h-screen bg-stone-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50">
       <div className="mx-auto w-full max-w-2xl px-4 py-10 sm:px-6">
         <div className="mb-8 flex items-center gap-4">
           <Link
             href="/"
-            className="text-sm text-neutral-500 transition hover:text-neutral-900"
+            className="text-sm text-neutral-500 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
           >
             ← Back
           </Link>
@@ -116,32 +116,32 @@ export function SettingsClient({ session, initialApplication }: Props) {
         </div>
 
         {/* Profile card */}
-        <div className="mb-6 rounded-2xl border border-neutral-200 bg-white p-6">
-          <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
+        <div className="mb-6 rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
+          <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
             Profile
           </p>
           <div className="mt-3 space-y-1">
-            <p className="font-medium">{session.name ?? "—"}</p>
-            <p className="text-sm text-neutral-500">{session.email}</p>
-            <span className="inline-block rounded-full bg-neutral-100 px-3 py-0.5 text-xs font-semibold text-neutral-700">
+            <p className="font-medium dark:text-neutral-50">{session.name ?? "—"}</p>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">{session.email}</p>
+            <span className="inline-block rounded-full bg-neutral-100 px-3 py-0.5 text-xs font-semibold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
               {roleLabel[session.role] ?? session.role}
             </span>
           </div>
         </div>
 
         {/* Change password */}
-        <section className="mb-6 rounded-2xl border border-neutral-200 bg-white p-6">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-neutral-500">
+        <section className="mb-6 rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
             Change password
           </p>
 
           {passwordSuccess && (
-            <div className="mb-4 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
+            <div className="mb-4 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700 dark:bg-green-950 dark:text-green-400">
               Password updated successfully.
             </div>
           )}
           {passwordError && (
-            <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+            <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950 dark:text-red-400">
               {passwordError}
             </div>
           )}
@@ -155,7 +155,7 @@ export function SettingsClient({ session, initialApplication }: Props) {
                 setPasswordForm((f) => ({ ...f, current_password: e.target.value }))
               }
               required
-              className="h-11 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none transition focus:border-neutral-900"
+              className="h-11 w-full rounded-xl border border-neutral-300 bg-white px-4 text-sm outline-none transition focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500 dark:focus:border-neutral-500"
             />
             <input
               type="password"
@@ -164,7 +164,7 @@ export function SettingsClient({ session, initialApplication }: Props) {
               onChange={(e) => setPasswordForm((f) => ({ ...f, password: e.target.value }))}
               required
               minLength={8}
-              className="h-11 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none transition focus:border-neutral-900"
+              className="h-11 w-full rounded-xl border border-neutral-300 bg-white px-4 text-sm outline-none transition focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500 dark:focus:border-neutral-500"
             />
             <input
               type="password"
@@ -174,12 +174,12 @@ export function SettingsClient({ session, initialApplication }: Props) {
                 setPasswordForm((f) => ({ ...f, password_confirmation: e.target.value }))
               }
               required
-              className="h-11 w-full rounded-xl border border-neutral-300 px-4 text-sm outline-none transition focus:border-neutral-900"
+              className="h-11 w-full rounded-xl border border-neutral-300 bg-white px-4 text-sm outline-none transition focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500 dark:focus:border-neutral-500"
             />
             <button
               type="submit"
               disabled={passwordLoading}
-              className="h-11 w-full rounded-xl bg-neutral-900 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-50"
+              className="h-11 w-full rounded-xl bg-neutral-900 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white"
             >
               {passwordLoading ? "Saving…" : "Update password"}
             </button>
@@ -188,17 +188,17 @@ export function SettingsClient({ session, initialApplication }: Props) {
 
         {/* Host application section — hidden for admins */}
         {session.role !== "admin" && (
-          <section className="rounded-2xl border border-neutral-200 bg-white p-6">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-500">
+          <section className="rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
               Host access
             </p>
 
             {session.role === "host" ? (
-              <p className="text-sm text-neutral-700">
+              <p className="text-sm text-neutral-700 dark:text-neutral-300">
                 You already have host access and can create listings.
               </p>
             ) : application?.status === "pending" ? (
-              <div className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
+              <div className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:bg-amber-950 dark:text-amber-400">
                 Your application is under review. We'll update your role once an admin
                 decides.
                 {application.admin_note && (
@@ -206,13 +206,13 @@ export function SettingsClient({ session, initialApplication }: Props) {
                 )}
               </div>
             ) : application?.status === "approved" ? (
-              <div className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
+              <div className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700 dark:bg-green-950 dark:text-green-400">
                 Your application was approved. Your role has been upgraded to Host.
               </div>
             ) : (
               <>
                 {application?.status === "rejected" && (
-                  <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+                  <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950 dark:text-red-400">
                     Your previous application was rejected.
                     {application.admin_note && (
                       <p className="mt-1 font-medium">Reason: {application.admin_note}</p>
@@ -220,12 +220,12 @@ export function SettingsClient({ session, initialApplication }: Props) {
                     <p className="mt-1">You can apply again below.</p>
                   </div>
                 )}
-                <p className="mb-4 text-sm text-neutral-600">
+                <p className="mb-4 text-sm text-neutral-600 dark:text-neutral-400">
                   Apply to become a host and start listing your properties.
                 </p>
 
                 {applyError && (
-                  <div className="mb-3 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+                  <div className="mb-3 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950 dark:text-red-400">
                     {applyError}
                   </div>
                 )}
@@ -237,7 +237,7 @@ export function SettingsClient({ session, initialApplication }: Props) {
                     onChange={(e) => setNoteInput(e.target.value)}
                     rows={3}
                     maxLength={1000}
-                    className="w-full rounded-xl border border-neutral-300 px-4 py-3 text-sm outline-none transition focus:border-neutral-900"
+                    className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:placeholder-neutral-500 dark:focus:border-neutral-500"
                   />
                   <button
                     type="submit"

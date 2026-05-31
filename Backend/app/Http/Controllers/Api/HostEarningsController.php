@@ -40,7 +40,7 @@ class HostEarningsController extends Controller
         // Monthly breakdown — last 12 months
         $monthly = [];
         for ($i = 11; $i >= 0; $i--) {
-            $month = Carbon::now()->subMonths($i);
+            $month = Carbon::now()->startOfMonth()->subMonths($i);
             $label = $month->format('M Y');
             $start = $month->copy()->startOfMonth();
             $end = $month->copy()->endOfMonth();

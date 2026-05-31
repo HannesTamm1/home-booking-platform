@@ -2,6 +2,7 @@
 
 install:
 	cd Backend && composer install
+	cd Backend && php artisan storage:link
 	cd Frontend && npm install
 
 dev:

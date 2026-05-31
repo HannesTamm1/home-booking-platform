@@ -38,7 +38,7 @@ export default async function AdminListingsModerationPage() {
     <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight">Listing moderation</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
           {listings.length} listing{listings.length !== 1 ? "s" : ""} pending review.
         </p>
       </div>

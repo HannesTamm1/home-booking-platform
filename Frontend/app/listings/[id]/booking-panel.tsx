@@ -92,18 +92,18 @@ export function BookingPanel({
   const canReserve = checkIn && checkOut && nights > 0 && !hasConflict;
 
   return (
-    <div className="rounded-[2rem] border border-neutral-200 bg-white p-6 shadow-[0_16px_48px_rgba(0,0,0,0.08)]">
+    <div className="rounded-[2rem] border border-neutral-200 bg-white p-6 shadow-[0_16px_48px_rgba(0,0,0,0.08)] dark:border-neutral-700 dark:bg-neutral-900 dark:shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
       <div className="mb-5">
-        <span className="text-2xl font-semibold text-neutral-900">
+        <span className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
           {formatCurrency(pricePerNight, currency)}
         </span>
-        <span className="ml-1 text-sm text-neutral-500">/ night</span>
+        <span className="ml-1 text-sm text-neutral-500 dark:text-neutral-400">/ night</span>
       </div>
 
       <div className="space-y-3">
-        <div className="grid grid-cols-2 overflow-hidden rounded-2xl border border-neutral-300">
-          <div className="border-r border-neutral-300 p-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
+        <div className="grid grid-cols-2 overflow-hidden rounded-2xl border border-neutral-300 dark:border-neutral-700">
+          <div className="border-r border-neutral-300 p-3 dark:border-neutral-700">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
               Check-in
             </p>
             <input
@@ -111,11 +111,11 @@ export function BookingPanel({
               value={checkIn}
               min={today}
               onChange={handleCheckInChange}
-              className="mt-1 w-full text-sm font-medium text-neutral-900 outline-none"
+              className="mt-1 w-full bg-transparent text-sm font-medium text-neutral-900 outline-none dark:text-neutral-50 dark:[color-scheme:dark]"
             />
           </div>
           <div className="p-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
               Check-out
             </p>
             <input
@@ -124,19 +124,19 @@ export function BookingPanel({
               value={checkOut}
               min={checkIn || today}
               onChange={(e) => setCheckOut(e.target.value)}
-              className="mt-1 w-full text-sm font-medium text-neutral-900 outline-none"
+              className="mt-1 w-full bg-transparent text-sm font-medium text-neutral-900 outline-none dark:text-neutral-50 dark:[color-scheme:dark]"
             />
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-neutral-300 p-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
+        <div className="overflow-hidden rounded-2xl border border-neutral-300 p-3 dark:border-neutral-700">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500 dark:text-neutral-400">
             Guests
           </p>
           <select
             value={guests}
             onChange={(e) => setGuests(Number(e.target.value))}
-            className="mt-1 w-full text-sm font-medium text-neutral-900 outline-none"
+            className="mt-1 w-full bg-transparent text-sm font-medium text-neutral-900 outline-none dark:text-neutral-50 dark:[color-scheme:dark]"
           >
             {Array.from({ length: maxGuests }, (_, i) => i + 1).map((n) => (
               <option key={n} value={n}>
@@ -168,14 +168,14 @@ export function BookingPanel({
         </button>
 
         {nights > 0 && !hasConflict && (
-          <div className="space-y-2 border-t border-neutral-100 pt-4">
-            <div className="flex justify-between text-sm text-neutral-700">
+          <div className="space-y-2 border-t border-neutral-100 pt-4 dark:border-neutral-800">
+            <div className="flex justify-between text-sm text-neutral-700 dark:text-neutral-300">
               <span>
                 {formatCurrency(pricePerNight, currency)} × {nights} night{nights === 1 ? "" : "s"}
               </span>
               <span>{formatCurrency(subtotal, currency)}</span>
             </div>
-            <div className="flex justify-between border-t border-neutral-200 pt-2 text-sm font-semibold text-neutral-900">
+            <div className="flex justify-between border-t border-neutral-200 pt-2 text-sm font-semibold text-neutral-900 dark:border-neutral-700 dark:text-neutral-50">
               <span>Total</span>
               <span>{formatCurrency(subtotal, currency)}</span>
             </div>

@@ -67,7 +67,7 @@ export default async function CheckoutPage({
       <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
         <header className="flex items-center justify-between border-b border-neutral-200 pb-6">
           <Link href="/" className="text-2xl font-semibold tracking-tight text-rose-500">
-            airbnb
+            airbaba
           </Link>
           <Link
             href={`/listings/${id}`}

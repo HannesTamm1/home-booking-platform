@@ -29,6 +29,7 @@ class ListingController extends Controller
             'status' => 'draft',
             'title' => $request->string('title')->trim()->value(),
             'destination' => $request->filled('destination') ? $request->string('destination')->trim()->value() : null,
+            'address' => $request->filled('address') ? $request->string('address')->trim()->value() : null,
             'description' => $request->input('description'),
             'house_rules' => $request->input('house_rules'),
             'property_type' => $request->input('property_type'),
@@ -64,6 +65,7 @@ class ListingController extends Controller
         $listing->update(array_filter([
             'title' => $request->filled('title') ? $request->string('title')->trim()->value() : null,
             'destination' => $request->has('destination') ? ($request->filled('destination') ? $request->string('destination')->trim()->value() : null) : $listing->destination,
+            'address' => $request->has('address') ? ($request->filled('address') ? $request->string('address')->trim()->value() : null) : $listing->address,
             'description' => $request->has('description') ? $request->input('description') : $listing->description,
             'house_rules' => $request->has('house_rules') ? $request->input('house_rules') : $listing->house_rules,
             'property_type' => $request->has('property_type') ? $request->input('property_type') : $listing->property_type,

@@ -48,7 +48,10 @@ class PaginateListings
     private function baseQuery(array $filters = []): Builder
     {
         return $this->filterQuery($filters)
-            ->with(['host:id'])
+            ->with([
+                'host:id,name',
+                'photos' => fn ($q) => $q->where('sort_order', 0)->limit(1),
+            ])
             ->withCount([
                 'bookings as confirmed_bookings_count' => fn (Builder $query) => $query->where('status', 'confirmed'),
             ])
@@ -59,7 +62,7 @@ class PaginateListings
     }
 
     /**
-     * @param  array{destination?: string|null, guests?: int|null, check_in?: string|null, check_out?: string|null}  $filters
+     * @param  array{destination?: string|null, guests?: int|null, check_in?: string|null, check_out?: string|null, property_type?: string|null}  $filters
      */
     private function filterQuery(array $filters = []): Builder
     {
@@ -73,6 +76,10 @@ class PaginateListings
 
         if ($filters['guests'] ?? null) {
             $query->where('max_guests', '>=', $filters['guests']);
+        }
+
+        if ($filters['property_type'] ?? null) {
+            $query->where('property_type', $filters['property_type']);
         }
 
         if (($filters['check_in'] ?? null) && ($filters['check_out'] ?? null)) {

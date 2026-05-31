@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const bodyFont = Manrope({
   variable: "--font-body",
@@ -15,8 +16,8 @@ const displayFont = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "AirStay | Home Booking Platform",
-  description: "Simple Airbnb-inspired home booking frontend with listings and auth.",
+  title: "airbaba",
+  description: "Find your perfect stay with airbaba.",
 };
 
 export default function RootLayout({
@@ -25,19 +26,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${bodyFont.variable} ${displayFont.variable} min-h-screen bg-stone-50 font-[family:var(--font-body)] text-neutral-900 antialiased`}
+        className={`${bodyFont.variable} ${displayFont.variable} min-h-screen bg-stone-50 font-[family:var(--font-body)] text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-50`}
       >
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-rose-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg"
-        >
-          Skip to main content
-        </a>
-        <div id="main-content">
-          {children}
-        </div>
+        <ThemeProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-rose-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg"
+          >
+            Skip to main content
+          </a>
+          <div id="main-content">
+            {children}
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
