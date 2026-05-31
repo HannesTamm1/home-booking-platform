@@ -27,6 +27,10 @@ class LoginController extends Controller
             ]);
         }
 
+        if ($user->is_suspended) {
+            return response()->json(['message' => 'Your account has been suspended. Please contact support.'], 403);
+        }
+
         $user->tokens()->where('name', 'api')->delete();
         $token = $user->createToken('api')->plainTextToken;
 

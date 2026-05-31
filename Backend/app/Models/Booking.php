@@ -16,6 +16,8 @@ class Booking extends Model
         'start_date',
         'end_date',
         'total_price_cents',
+        'host_payout_cents',
+        'payout_released_at',
         'currency',
         'status',
     ];
@@ -26,6 +28,8 @@ class Booking extends Model
             'start_date' => 'date',
             'end_date' => 'date',
             'total_price_cents' => 'integer',
+            'host_payout_cents' => 'integer',
+            'payout_released_at' => 'datetime',
         ];
     }
 
@@ -37,5 +41,10 @@ class Booking extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function disputes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Dispute::class);
     }
 }

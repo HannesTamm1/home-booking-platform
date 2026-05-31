@@ -77,10 +77,26 @@ export default async function Home({ searchParams }: HomeProps) {
                 </div>
                 {session.role === "admin" && (
                   <Link
-                    href="/admin/host-applications"
+                    href="/admin"
                     className="rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 transition hover:bg-amber-100"
                   >
                     Admin
+                  </Link>
+                )}
+                {session.role === "host" && (
+                  <Link
+                    href="/host"
+                    className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-600 transition hover:bg-rose-100"
+                  >
+                    Host dashboard
+                  </Link>
+                )}
+                {session.role === "guest" && (
+                  <Link
+                    href="/become-a-host"
+                    className="rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:border-neutral-900 hover:text-neutral-900"
+                  >
+                    Become a host
                   </Link>
                 )}
                 <Link
@@ -106,6 +122,12 @@ export default async function Home({ searchParams }: HomeProps) {
               </div>
             ) : (
               <div className="flex items-center gap-3 self-end lg:self-auto">
+                <Link
+                  href="/become-a-host"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 hover:text-neutral-900"
+                >
+                  Become a host
+                </Link>
                 <Link
                   href="/login"
                   className="rounded-full px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 hover:text-neutral-900"

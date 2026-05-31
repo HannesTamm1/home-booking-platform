@@ -39,9 +39,36 @@ class DatabaseSeeder extends Seeder
 
         // Fixed demo listings with known prices for QA
         $demoListings = [
-            ['title' => 'Old Town Loft', 'destination' => 'Tallinn', 'price_per_night_cents' => 16_000, 'max_guests' => 2],
-            ['title' => 'Beach House', 'destination' => 'Parnu', 'price_per_night_cents' => 24_000, 'max_guests' => 5],
-            ['title' => 'City Apartment', 'destination' => 'Riga', 'price_per_night_cents' => 19_000, 'max_guests' => 3],
+            [
+                'title' => 'Old Town Loft', 'destination' => 'Tallinn',
+                'price_per_night_cents' => 16_000, 'max_guests' => 2,
+                'status' => 'published', 'property_type' => 'loft',
+                'bedrooms' => 1, 'beds' => 1, 'bathrooms' => 1,
+                'amenities' => ['WiFi', 'Kitchen', 'Air conditioning', 'Workspace'],
+                'booking_type' => 'instant', 'min_nights' => 2,
+                'description' => 'Bright loft in the medieval old town with exposed brick walls and rooftop terrace.',
+                'rating_average' => 4.95, 'rating_count' => 87,
+            ],
+            [
+                'title' => 'Beach House', 'destination' => 'Parnu',
+                'price_per_night_cents' => 24_000, 'max_guests' => 5,
+                'status' => 'published', 'property_type' => 'house',
+                'bedrooms' => 3, 'beds' => 4, 'bathrooms' => 2,
+                'amenities' => ['WiFi', 'Kitchen', 'Free parking', 'Balcony', 'BBQ grill'],
+                'booking_type' => 'instant', 'min_nights' => 3,
+                'description' => 'Spacious family beach house 50 m from the sandy shore. Private garden and parking.',
+                'rating_average' => 4.88, 'rating_count' => 42,
+            ],
+            [
+                'title' => 'City Apartment', 'destination' => 'Riga',
+                'price_per_night_cents' => 19_000, 'max_guests' => 3,
+                'status' => 'published', 'property_type' => 'apartment',
+                'bedrooms' => 2, 'beds' => 2, 'bathrooms' => 1,
+                'amenities' => ['WiFi', 'Kitchen', 'TV', 'Washing machine', 'Dishwasher'],
+                'booking_type' => 'request', 'min_nights' => 1,
+                'description' => 'Stylish two-bedroom apartment in the Art Nouveau district, minutes from the central market.',
+                'rating_average' => 4.72, 'rating_count' => 63,
+            ],
         ];
 
         foreach ($demoListings as $attrs) {

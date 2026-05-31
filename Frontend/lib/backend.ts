@@ -14,16 +14,30 @@ export type AuthResponse = {
 
 export type Listing = {
   id: number;
+  status: string;
   title: string;
   destination: string | null;
   description: string | null;
+  houseRules: string | null;
+  propertyType: string | null;
   pricePerNight: number;
+  weekendPricePerNight: number | null;
   currency: string;
   maxGuests: number;
+  bedrooms: number;
+  beds: number;
+  bathrooms: number;
+  amenities: string[];
+  bookingType: string;
+  minNights: number;
   latitude: number | null;
   longitude: number | null;
-  photos?: Array<{ url: string; caption: string | null }>;
+  ratingAverage: number | null;
+  ratingCount: number;
+  photos?: Array<{ id: number; url: string; caption: string | null; sortOrder: number; isCover: boolean }>;
   host: {
+    id?: number;
+    name?: string | null;
     publicLabel: string;
   };
   metrics: {
@@ -78,6 +92,27 @@ export type ListingsResponse = {
       hasMorePages: boolean;
     };
   };
+};
+
+export type CreateListingInput = {
+  title: string;
+  destination?: string;
+  description?: string;
+  houseRules?: string;
+  propertyType?: string;
+  pricePerNightCents: number;
+  weekendPricePerNightCents?: number;
+  currency?: string;
+  maxGuests: number;
+  bedrooms?: number;
+  beds?: number;
+  bathrooms?: number;
+  amenities?: string[];
+  bookingType?: "instant" | "request";
+  minNights?: number;
+  latitude?: number;
+  longitude?: number;
+  photos?: Array<{ url: string; caption?: string }>;
 };
 
 function getConfiguredBackendUrl() {
@@ -391,5 +426,200 @@ export async function fetchUserBooking(
       booking: null,
       error: error instanceof Error ? error.message : "Unknown error",
     };
+  }
+}
+
+export async function fetchHostListings(
+  token: string,
+): Promise<{ listings: Listing[] | null; error: string | null }> {
+  try {
+    const backendUrl = getBackendBaseUrl();
+    const endpoint = new URL("/api/host/listings", `${backendUrl}/`).toString();
+
+    const response = await fetch(endpoint, {
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Backend returned ${response.status}`);
+    }
+
+    const payload = (await response.json()) as { data: Listing[] };
+    return { listings: payload.data, error: null };
+  } catch (error) {
+    return {
+      listings: null,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+export async function createListing(
+  input: CreateListingInput,
+  token: string,
+): Promise<{ listing: Listing | null; error: string | null }> {
+  try {
+    const backendUrl = getBackendBaseUrl();
+    const endpoint = new URL("/api/listings", `${backendUrl}/`).toString();
+
+    const body = {
+      title: input.title,
+      destination: input.destination,
+      description: input.description,
+      house_rules: input.houseRules,
+      property_type: input.propertyType,
+      price_per_night_cents: input.pricePerNightCents,
+      weekend_price_per_night_cents: input.weekendPricePerNightCents,
+      currency: input.currency ?? "EUR",
+      max_guests: input.maxGuests,
+      bedrooms: input.bedrooms,
+      beds: input.beds,
+      bathrooms: input.bathrooms,
+      amenities: input.amenities,
+      booking_type: input.bookingType,
+      min_nights: input.minNights,
+      latitude: input.latitude,
+      longitude: input.longitude,
+      photos: input.photos,
+    };
+
+    const response = await fetch(endpoint, {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const err = (await response.json()) as { message?: string };
+      throw new Error(err.message ?? `Backend returned ${response.status}`);
+    }
+
+    const payload = (await response.json()) as { data: Listing };
+    return { listing: payload.data, error: null };
+  } catch (error) {
+    return {
+      listing: null,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+export async function updateListing(
+  id: number,
+  input: Partial<CreateListingInput>,
+  token: string,
+): Promise<{ listing: Listing | null; error: string | null }> {
+  try {
+    const backendUrl = getBackendBaseUrl();
+    const endpoint = new URL(`/api/listings/${id}`, `${backendUrl}/`).toString();
+
+    const body: Record<string, unknown> = {};
+    if (input.title !== undefined) body.title = input.title;
+    if (input.destination !== undefined) body.destination = input.destination;
+    if (input.description !== undefined) body.description = input.description;
+    if (input.houseRules !== undefined) body.house_rules = input.houseRules;
+    if (input.propertyType !== undefined) body.property_type = input.propertyType;
+    if (input.pricePerNightCents !== undefined) body.price_per_night_cents = input.pricePerNightCents;
+    if (input.weekendPricePerNightCents !== undefined) body.weekend_price_per_night_cents = input.weekendPricePerNightCents;
+    if (input.currency !== undefined) body.currency = input.currency;
+    if (input.maxGuests !== undefined) body.max_guests = input.maxGuests;
+    if (input.bedrooms !== undefined) body.bedrooms = input.bedrooms;
+    if (input.beds !== undefined) body.beds = input.beds;
+    if (input.bathrooms !== undefined) body.bathrooms = input.bathrooms;
+    if (input.amenities !== undefined) body.amenities = input.amenities;
+    if (input.bookingType !== undefined) body.booking_type = input.bookingType;
+    if (input.minNights !== undefined) body.min_nights = input.minNights;
+    if (input.latitude !== undefined) body.latitude = input.latitude;
+    if (input.longitude !== undefined) body.longitude = input.longitude;
+    if (input.photos !== undefined) body.photos = input.photos;
+
+    const response = await fetch(endpoint, {
+      method: "PUT",
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const err = (await response.json()) as { message?: string };
+      throw new Error(err.message ?? `Backend returned ${response.status}`);
+    }
+
+    const payload = (await response.json()) as { data: Listing };
+    return { listing: payload.data, error: null };
+  } catch (error) {
+    return {
+      listing: null,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+export async function submitListingForReview(
+  id: number,
+  token: string,
+): Promise<{ error: string | null }> {
+  try {
+    const backendUrl = getBackendBaseUrl();
+    const endpoint = new URL(`/api/listings/${id}/submit`, `${backendUrl}/`).toString();
+
+    const response = await fetch(endpoint, {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const err = (await response.json()) as { message?: string };
+      throw new Error(err.message ?? `Backend returned ${response.status}`);
+    }
+
+    return { error: null };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Unknown error" };
+  }
+}
+
+export async function deleteListing(
+  id: number,
+  token: string,
+): Promise<{ error: string | null }> {
+  try {
+    const backendUrl = getBackendBaseUrl();
+    const endpoint = new URL(`/api/listings/${id}`, `${backendUrl}/`).toString();
+
+    const response = await fetch(endpoint, {
+      method: "DELETE",
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok && response.status !== 204) {
+      throw new Error(`Backend returned ${response.status}`);
+    }
+
+    return { error: null };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Unknown error" };
   }
 }

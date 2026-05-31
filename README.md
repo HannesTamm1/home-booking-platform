@@ -1,81 +1,141 @@
 # Home Booking Platform
 
-Simple local setup guide for anyone who wants to work on this project.
+An Airbnb-style short-term rental marketplace. Guests browse and book stays; hosts manage listings and track earnings; admins moderate content and resolve disputes.
 
-This repo has 2 parts:
+**Stack:** Next.js 16 (App Router) · Laravel 13 · PostgreSQL · Sanctum token auth
 
-- `Frontend` = Next.js app
-- `Backend` = Laravel API
+---
 
 ## What you need
 
-- Git
-- Node.js and npm
-- PHP 8.3+
-- Composer
-- PostgreSQL
+| Tool | Version |
+|------|---------|
+| Node.js | 20+ |
+| PHP | 8.3+ |
+| Composer | 2+ |
+| PostgreSQL | 15+ |
 
-## Get the project
+---
 
-```bash
-git clone <repo-url>
-cd home-booking-platform
-```
-
-## Backend setup
+## Quick start (5 minutes)
 
 ```bash
+# 1. Clone
+git clone <repo-url> && cd home-booking-platform
+
+# 2. Install dependencies
+make install
+# or manually:
+#   cd Backend && composer install
+#   cd Frontend && npm install
+
+# 3. Configure backend
 cd Backend
 cp .env.example .env
-composer install
-bun install
 php artisan key:generate
-```
+# Edit .env — set DB_DATABASE, DB_USERNAME, DB_PASSWORD
 
-Update the database settings in `Backend/.env` so they match your local PostgreSQL setup:
-
-
-Then run the migrations:
-
-```bash
-php artisan migrate
-```
-
-## Frontend setup
-
-```bash
+# 4. Configure frontend
 cd ../Frontend
-bun install
-cp .env.example .env.local
+cp .env.example .env.local   # contains BACKEND_URL=http://127.0.0.1:8000
+
+# 5. Migrate + seed demo data
+make seed
+# or: cd Backend && php artisan migrate:fresh --seed
+
+# 6. Start both servers
+make dev
+# or in two terminals:
+#   cd Backend  && php artisan serve --host=127.0.0.1 --port=8000
+#   cd Frontend && npm run dev
 ```
 
-The default frontend backend URL is:
+Open **http://127.0.0.1:3000**
 
-```env
-BACKEND_URL=http://127.0.0.1:8000
-```
+---
 
-You only need to change it if your Laravel app runs somewhere else.
+## Environment variables
 
-## Run the project
+### Backend (`Backend/.env`)
 
-Start the backend in one terminal:
+| Variable | Required | Example | Notes |
+|----------|----------|---------|-------|
+| `DB_CONNECTION` | yes | `pgsql` | |
+| `DB_HOST` | yes | `127.0.0.1` | |
+| `DB_PORT` | yes | `5432` | |
+| `DB_DATABASE` | yes | `home_booking_platform` | |
+| `DB_USERNAME` | yes | `postgres` | |
+| `DB_PASSWORD` | yes | `secret` | |
+| `APP_KEY` | yes | generated | `php artisan key:generate` |
+| `STRIPE_SECRET_KEY` | no | `sk_test_...` | Phase 3/4: real payments |
+| `STRIPE_WEBHOOK_SECRET` | no | `whsec_...` | Stripe webhook verification |
+
+### Frontend (`Frontend/.env.local`)
+
+| Variable | Required | Example | Notes |
+|----------|----------|---------|-------|
+| `BACKEND_URL` | yes | `http://127.0.0.1:8000` | Laravel API base URL |
+
+---
+
+## Demo credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| Guest | `user@example.com` | `password123` |
+| Host | `renter@example.com` | `password123` |
+| Admin | `admin@example.com` | `password123` |
+
+---
+
+## Useful commands
 
 ```bash
-cd Backend
-php artisan serve --host=127.0.0.1 --port=8000
+# Reset database to clean seed state
+make seed                       # or: cd Backend && php artisan migrate:fresh --seed
+
+# Type-check frontend
+cd Frontend && npm run type-check
+
+# Run e2e tests (requires servers running)
+cd Frontend && npm run test:e2e
+
+# View e2e report
+cd Frontend && npm run test:e2e:report
 ```
 
-Start the frontend in another terminal:
+---
 
-```bash
-cd Frontend
-bun run dev
+## Project structure
+
+```
+home-booking-platform/
+├── Backend/                 Laravel API
+│   ├── app/
+│   │   ├── Actions/         Business logic (CreateBooking, PaginateListings)
+│   │   ├── Http/Controllers/Api/
+│   │   ├── Models/          Eloquent models
+│   │   └── Policies/        Authorization gates
+│   ├── database/
+│   │   ├── migrations/
+│   │   ├── factories/
+│   │   └── seeders/
+│   └── routes/api.php
+├── Frontend/                Next.js App Router
+│   ├── app/
+│   │   ├── (pages)/         Server Components (page.tsx)
+│   │   ├── api/             Next.js API route handlers (proxy to Laravel)
+│   │   ├── admin/           Admin section
+│   │   └── host/            Host section
+│   ├── components/          Shared UI
+│   ├── lib/
+│   │   ├── backend.ts       Typed fetch helpers + API types
+│   │   └── auth-session.ts  Cookie-based session codec
+│   └── e2e/                 Playwright tests
+├── Makefile                 Convenience targets
+└── RUNBOOK.md               Architecture + per-role walkthrough
 ```
 
-Open `http://127.0.0.1:3000` in your browser.
+---
 
-## Notes
-
-- The frontend reads data from the Laravel API at `http://127.0.0.1:8000`.
-- After a fresh migration, the database will be empty unless you add records yourself.
+See **RUNBOOK.md** for the full architecture, booking state machine, and per-role click-through verification guide.

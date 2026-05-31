@@ -18,21 +18,40 @@ class ListingResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'status' => $this->status,
             'title' => $this->title,
             'destination' => $this->destination,
             'description' => $this->description,
+            'houseRules' => $this->house_rules,
+            'propertyType' => $this->property_type,
             'pricePerNight' => round($this->price_per_night_cents / 100, 2),
+            'weekendPricePerNight' => $this->weekend_price_per_night_cents
+                ? round($this->weekend_price_per_night_cents / 100, 2)
+                : null,
             'currency' => $this->currency,
             'maxGuests' => $this->max_guests,
+            'bedrooms' => $this->bedrooms,
+            'beds' => $this->beds,
+            'bathrooms' => $this->bathrooms,
+            'amenities' => $this->amenities ?? [],
+            'bookingType' => $this->booking_type,
+            'minNights' => $this->min_nights,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
+            'ratingAverage' => $this->rating_average,
+            'ratingCount' => $this->rating_count,
             'photos' => $this->whenLoaded('photos', fn () => $this->photos->map(fn ($p) => [
+                'id' => $p->id,
                 'url' => $p->url,
                 'caption' => $p->caption,
+                'sortOrder' => $p->sort_order,
+                'isCover' => $p->sort_order === 0,
             ])->all()),
-            'host' => [
-                'publicLabel' => $this->host ? 'Managed by host' : 'Host unavailable',
-            ],
+            'host' => $this->whenLoaded('host', fn () => [
+                'id' => $this->host->id,
+                'name' => $this->host->name,
+                'publicLabel' => $this->host->name ?? 'Your host',
+            ], ['publicLabel' => 'Managed by host']),
             'metrics' => [
                 'confirmedBookings' => (int) ($this->confirmed_bookings_count ?? 0),
                 'confirmedRevenue' => round(($this->confirmed_revenue ?? 0) / 100, 2),

@@ -137,24 +137,43 @@ export default async function ListingDetailPage({
             <div>
               <h3 className="text-lg font-semibold text-neutral-900">Details</h3>
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl bg-white border border-neutral-200 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">Guests</p>
-                  <p className="mt-2 text-sm font-semibold text-neutral-900">{listing.maxGuests} max</p>
-                </div>
-                <div className="rounded-2xl bg-white border border-neutral-200 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">Price</p>
-                  <p className="mt-2 text-sm font-semibold text-neutral-900">
-                    {formatCurrency(listing.pricePerNight, listing.currency)} / night
-                  </p>
-                </div>
-                {listing.destination && (
-                  <div className="rounded-2xl bg-white border border-neutral-200 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">Location</p>
-                    <p className="mt-2 text-sm font-semibold text-neutral-900">{listing.destination}</p>
+                {[
+                  { label: "Guests", value: `${listing.maxGuests} max` },
+                  { label: "Bedrooms", value: String(listing.bedrooms ?? 1) },
+                  { label: "Beds", value: String(listing.beds ?? 1) },
+                  { label: "Bathrooms", value: String(listing.bathrooms ?? 1) },
+                  { label: "Price", value: `${formatCurrency(listing.pricePerNight, listing.currency)} / night` },
+                  ...(listing.minNights > 1 ? [{ label: "Min stay", value: `${listing.minNights} nights` }] : []),
+                  ...(listing.destination ? [{ label: "Location", value: listing.destination }] : []),
+                  ...(listing.ratingAverage ? [{ label: "Rating", value: `★ ${listing.ratingAverage.toFixed(2)} (${listing.ratingCount} reviews)` }] : []),
+                ].map(({ label, value }) => (
+                  <div key={label} className="rounded-2xl bg-white border border-neutral-200 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">{label}</p>
+                    <p className="mt-2 text-sm font-semibold text-neutral-900">{value}</p>
                   </div>
-                )}
+                ))}
               </div>
             </div>
+
+            {listing.amenities && listing.amenities.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-neutral-900">Amenities</h3>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {listing.amenities.map((a) => (
+                    <span key={a} className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-700">
+                      {a}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {listing.houseRules && (
+              <div>
+                <h3 className="text-lg font-semibold text-neutral-900">House rules</h3>
+                <p className="mt-3 text-sm leading-7 text-neutral-600 whitespace-pre-line">{listing.houseRules}</p>
+              </div>
+            )}
 
             {blockedPeriods.length > 0 && (
               <div>

@@ -71,6 +71,7 @@ class CreateBooking
 
             $nights = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate));
             $totalPriceCents = $listing->price_per_night_cents * $nights;
+            $hostPayoutCents = (int) floor($totalPriceCents * 0.85);
 
             $booking = Booking::query()->create([
                 'listing_id' => $listing->id,
@@ -78,6 +79,7 @@ class CreateBooking
                 'start_date' => $startDate,
                 'end_date' => $endDate,
                 'total_price_cents' => $totalPriceCents,
+                'host_payout_cents' => $hostPayoutCents,
                 'currency' => $listing->currency,
                 'status' => 'confirmed',
             ]);

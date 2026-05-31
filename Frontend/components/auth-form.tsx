@@ -111,11 +111,13 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
             name="email"
             type="email"
             autoComplete="email"
-            className="w-full rounded-2xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900"
+            aria-invalid={!!fieldError("email")}
+            aria-describedby={fieldError("email") ? "email-error" : undefined}
+            className="w-full rounded-2xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus-visible:ring-2 focus-visible:ring-rose-300"
             placeholder="you@example.com"
           />
           {fieldError("email") ? (
-            <p className="text-sm text-rose-500">{fieldError("email")}</p>
+            <p id="email-error" role="alert" className="text-sm text-rose-500">{fieldError("email")}</p>
           ) : null}
         </div>
 
@@ -128,20 +130,19 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
             name="password"
             type="password"
             autoComplete={isLogin ? "current-password" : "new-password"}
-            className="w-full rounded-2xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900"
+            aria-invalid={!!fieldError("password")}
+            aria-describedby={fieldError("password") ? "password-error" : undefined}
+            className="w-full rounded-2xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus-visible:ring-2 focus-visible:ring-rose-300"
             placeholder="At least 8 characters"
           />
           {fieldError("password") ? (
-            <p className="text-sm text-rose-500">{fieldError("password")}</p>
+            <p id="password-error" role="alert" className="text-sm text-rose-500">{fieldError("password")}</p>
           ) : null}
         </div>
 
         {!isLogin ? (
           <div className="space-y-2">
-            <label
-              htmlFor="password_confirmation"
-              className="text-sm font-medium text-neutral-700"
-            >
+            <label htmlFor="password_confirmation" className="text-sm font-medium text-neutral-700">
               Confirm password
             </label>
             <input
@@ -149,14 +150,14 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
               name="password_confirmation"
               type="password"
               autoComplete="new-password"
-              className="w-full rounded-2xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900"
+              className="w-full rounded-2xl border border-neutral-300 px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-neutral-900 focus-visible:ring-2 focus-visible:ring-rose-300"
               placeholder="Repeat your password"
             />
           </div>
         ) : null}
 
         {generalError ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+          <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
             {generalError}
           </div>
         ) : null}
@@ -164,7 +165,7 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
         <button
           type="submit"
           disabled={isPending}
-          className="w-full rounded-2xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-600 disabled:cursor-not-allowed disabled:opacity-70"
+          className="w-full rounded-2xl bg-rose-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-600 disabled:cursor-not-allowed disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
         >
           {isPending ? "Please wait..." : isLogin ? "Log in" : "Create account"}
         </button>

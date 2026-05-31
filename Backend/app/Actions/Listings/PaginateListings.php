@@ -32,6 +32,7 @@ class PaginateListings
     public function destinations(): array
     {
         return Listing::query()
+            ->where('status', 'published')
             ->whereNotNull('destination')
             ->orderBy('destination')
             ->distinct()
@@ -62,7 +63,7 @@ class PaginateListings
      */
     private function filterQuery(array $filters = []): Builder
     {
-        $query = Listing::query();
+        $query = Listing::query()->where('status', 'published');
 
         $validDestinations = $this->destinations();
 

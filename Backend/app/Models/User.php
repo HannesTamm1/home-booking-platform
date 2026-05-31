@@ -16,6 +16,10 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'is_suspended',
+        'suspension_reason',
+        'stripe_connect_id',
+        'connect_onboarding_complete',
     ];
 
     protected $hidden = [
@@ -26,6 +30,8 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'is_suspended' => 'boolean',
+            'connect_onboarding_complete' => 'boolean',
         ];
     }
 
